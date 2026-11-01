@@ -88,4 +88,26 @@
 
 <script src="script.js"></script>
 </body>
+<!-- Firebase SDK CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Sizning Firebase konfiguratsiyangiz
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPLdynEIb9isrg2StOm_VX-r9GFzJtm-Y",
+    authDomain: "mening-yordamchim-e6fd6.firebaseapp.com",
+    projectId: "mening-yordamchim-e6fd6",
+    storageBucket: "mening-yordamchim-e6fd6.firebasestorage.app",
+    messagingSenderId: "357533463074",
+    appId: "1:357533463074:web:d15e297e2d49d80f3f507b",
+    measurementId: "G-Q6BGEX1Y6X"
+  };
+
+  // Firebase-ni ishga tushirish
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
 </html>
