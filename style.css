@@ -49,7 +49,7 @@ body {
   padding-bottom: 80px;
 }
 
-/* TOP BAR */
+/* YUQORI BAR VA LOGOLAR */
 .top {
   display: flex;
   justify-content: space-between;
@@ -59,29 +59,45 @@ body {
 
 .top h1 {
   font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-logo {
+  width: 28px !important;
+  height: 28px !important;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .me {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .me img {
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .theme-toggle {
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 1.1rem;
   cursor: pointer;
-  padding: 4px;
 }
 
-/* NAV */
+/* NAVIGATSIYA */
 nav {
   display: flex;
   gap: 8px;
@@ -106,7 +122,7 @@ nav button.on {
   border-color: var(--primary);
 }
 
-/* CARDS & INPUTS */
+/* KARTALAR VA INPUTLAR */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -155,7 +171,7 @@ input, select {
   cursor: pointer;
 }
 
-/* NOTIFICATION BOX */
+/* BILDIRISHNOMA BLOKI */
 .notif-box {
   margin-top: 12px;
   padding: 12px;
@@ -172,7 +188,7 @@ input, select {
   color: var(--muted);
 }
 
-/* LIST ITEMS */
+/* RO'YXAT ELEMENTLARI */
 .item {
   display: flex;
   align-items: center;
@@ -187,7 +203,21 @@ input, select {
 .item .t small { display: block; color: var(--muted); font-size: 0.8rem; }
 .item .t small.late { color: var(--late); }
 
-/* CALCULATOR */
+/* BO'SH HOLAT (EMPTY STATE) */
+.empty-box {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.empty-box span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* KALKULYATOR */
 .calc #disp {
   font-size: 2rem;
   text-align: right;
@@ -217,7 +247,7 @@ input, select {
 .keys button.op { background: var(--primary); color: #fff; }
 .keys button.eq { background: var(--plus); color: #fff; }
 
-/* SITES */
+/* SAYTLAR */
 .sites {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -244,7 +274,7 @@ input, select {
   color: #fff;
 }
 
-/* LOGIN CARD */
+/* KIRISH (LOGIN) OYNASI */
 #login {
   position: fixed;
   inset: 0;
@@ -264,6 +294,15 @@ input, select {
   border-radius: 12px;
   padding: 24px;
   text-align: center;
+}
+
+.logo img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 0 auto 12px auto;
+  display: block;
 }
 
 .tabs {
@@ -304,7 +343,7 @@ input, select {
   z-index: 100;
 }
 
-/* MOBILE NAVBAR FIX */
+/* MOBIL EKRAON UCHUN NAV FIX */
 @media (max-width: 480px) {
   nav {
     position: fixed;
@@ -317,54 +356,4 @@ input, select {
     border-top: 1px solid var(--border);
     z-index: 10;
   }
-}
-/* Yuqori o'ng tomondagi elementlarni vertikal ortalash */
-.me {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-/* Bo'sh holat (Empty state) dizayni */
-.empty-box {
-  text-align: center;
-  padding: 24px 16px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.empty-box span {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 6px;
-}
-/* Login kartındaki logonun boyutunu sabitleme */
-.logo img {
-  width: 80px !important;
-  height: 80px !important;
-  object-fit: cover;
-  border-radius: 16px;
-  margin: 0 auto 12px auto;
-  display: block;
-}
-
-/* Ana sayfadaki küçük logo boyutu */
-.top-logo {
-  width: 28px !important;
-  height: 28px !important;
-  object-fit: cover;
-  border-radius: 6px;
 }
