@@ -69,7 +69,7 @@ function renderTasks() {
       '<input type="checkbox" style="width:22px;height:22px" '+(t.done?'checked':'')+' data-d="'+t.id+'">' +
       '<div class="t"><b>'+esc(t.text)+'</b><small class="'+(late?'late':'')+'">'+esc(fmtDate(t.date))+' '+esc(t.time||'')+(late?' · kechikdi':'')+'</small></div>' +
       '<button class="mini" data-x="'+t.id+'">✕</button></div>';
-  }).join('') : '<div style="text-align:center;padding:16px;color:var(--muted)">Hozircha ish yo‘q</div>';
+  }).join('') : '<div class="empty-box"><span>📝</span>Hozircha ish yo‘q</div>';
 }
 
 $('tAdd').onclick = function() {

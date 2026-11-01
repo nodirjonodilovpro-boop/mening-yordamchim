@@ -318,3 +318,36 @@ input, select {
     z-index: 10;
   }
 }
+/* Yuqori o'ng tomondagi elementlarni vertikal ortalash */
+.me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Bo'sh holat (Empty state) dizayni */
+.empty-box {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.empty-box span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
