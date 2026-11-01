@@ -1,15 +1,44 @@
 /* ===== Yordamchi funksiyalar ===== */
-function load(k){try{var v=localStorage.getItem(K(k));return v?JSON.parse(v):[]}catch(e){return []}}
-function save(k,v){try{localStorage.setItem(K(k),JSON.stringify(v))}catch(e){alert('Saqlab bo‘lmadi (xotira to‘lgan bo‘lishi mumkin)')}}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function $(id){return document.getElementById(id)}
 var UID='',tasks=[],debts=[],sites=[];
-function K(k){return k+'_'+UID}
 
 /* ===== Menyu (bo'limlar) ===== */
 $('nav').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
 document.querySelectorAll('nav button').forEach(function(x){x.classList.toggle('on',x===b)});
 document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===b.dataset.s)})});
+
+/* ===== Firebase Baza Bilan Ishlash ===== */
+function loadUserData() {
+  if (!UID) return;
+  db.collection('users').doc(UID).get().then(function(doc) {
+    if (doc.exists) {
+      var data = doc.data();
+      tasks = data.tasks || [];
+      debts = data.debts || [];
+      sites = data.sites || [];
+    } else {
+      tasks = []; debts = []; sites = [];
+    }
+    renderTasks();
+    renderDebts();
+    renderSites();
+    check();
+  }).catch(function(err) {
+    console.error("Ma'lumotlarni yuklashda xatolik:", err);
+  });
+}
+
+function saveUserData() {
+  if (!UID) return;
+  db.collection('users').doc(UID).set({
+    tasks: tasks,
+    debts: debts,
+    sites: sites
+  }, { merge: true }).catch(function(err) {
+    console.error("Saqlashda xatolik:", err);
+  });
+}
 
 /* ===== Kundalik ishlar ===== */
 var d0=new Date();
@@ -24,11 +53,11 @@ return '<div class="item '+(t.done?'done':'')+'"><input type="checkbox" style="w
 
 $('tAdd').onclick=function(){var tx=$('tText').value.trim();if(!tx)return;
 tasks.push({id:Date.now(),text:tx,date:$('tDate').value,time:$('tTime').value,done:false,notified:false});
-save('y_tasks',tasks);$('tText').value='';renderTasks()};
+saveUserData();$('tText').value='';renderTasks()};
 
 $('tList').addEventListener('click',function(e){var d=e.target.dataset;
-if(d.d){var t=tasks.find(function(x){return x.id==d.d});t.done=e.target.checked;save('y_tasks',tasks);renderTasks()}
-if(d.x){tasks=tasks.filter(function(x){return x.id!=d.x});save('y_tasks',tasks);renderTasks()}});
+if(d.d){var t=tasks.find(function(x){return x.id==d.d});if(t){t.done=e.target.checked;saveUserData();renderTasks()}}
+if(d.x){tasks=tasks.filter(function(x){return x.id!=d.x});saveUserData();renderTasks()}});
 
 $('notifBtn').onclick=function(){try{Notification.requestPermission()}catch(e){alert('Brauzer bildirishnomani qo‘llamaydi')}};
 
@@ -36,12 +65,12 @@ function beep(){try{var c=new (window.AudioContext||window.webkitAudioContext)()
 
 function check(){var now=new Date(),hit=[];
 tasks.forEach(function(t){if(!t.done&&!t.notified&&t.date&&t.time&&new Date(t.date+'T'+t.time)<=now){t.notified=true;hit.push(t.text)}});
-if(hit.length){save('y_tasks',tasks);renderTasks();beep();
+if(hit.length){saveUserData();renderTasks();beep();
 $('alarmT').textContent='⏰ Eslatma: '+hit.join(' • ');$('alarm').style.display='block';
 try{if(Notification.permission==='granted')new Notification('Eslatma',{body:hit.join(', ')})}catch(e){}}}
 
 $('alarmX').onclick=function(){$('alarm').style.display='none'};
-setInterval(check,15000);check();renderTasks();
+setInterval(check,15000);
 
 /* ===== Kalkulyator ===== */
 var cur='0',acc=null,op=null,fresh=true;
@@ -75,10 +104,10 @@ $('qList').innerHTML=l.length?l.map(function(d){return '<div class="item"><div c
 $('qAdd').onclick=function(){var s=parseFloat($('qSum').value);var ism=$('qIsm').value.trim();
 if(!ism||!s){alert('Ism va pul miqdorini kiriting');return}
 debts.push({id:Date.now(),ism:ism,fam:$('qFam').value.trim(),tel:$('qTel').value.trim(),sum:s,tur:$('qTur').value,izoh:$('qIzoh').value.trim(),date:new Date().toLocaleDateString('ru-RU')});
-save('y_debts',debts);['qIsm','qFam','qTel','qSum','qIzoh'].forEach(function(i){$(i).value=''});renderDebts()};
+saveUserData();['qIsm','qFam','qTel','qSum','qIzoh'].forEach(function(i){$(i).value=''});renderDebts()};
 
-$('qList').addEventListener('click',function(e){var x=e.target.dataset.x;if(x&&confirm('O‘chirilsinmi?')){debts=debts.filter(function(d){return d.id!=x});save('y_debts',debts);renderDebts()}});
-$('qFind').oninput=renderDebts;renderDebts();
+$('qList').addEventListener('click',function(e){var x=e.target.dataset.x;if(x&&confirm('O‘chirilsinmi?')){debts=debts.filter(function(d){return d.id!=x});saveUserData();renderDebts()}});
+$('qFind').oninput=renderDebts;
 
 /* ===== Saytlarim ===== */
 var colors=['#4f46e5,#7c3aed','#0ea5e9,#2563eb','#10b981,#059669','#f59e0b,#ef4444','#ec4899,#8b5cf6','#14b8a6,#0ea5e9'];
@@ -93,90 +122,91 @@ function shrink(file,cb){var r=new FileReader();r.onload=function(){var im=new I
 
 $('sAdd').onclick=function(){var u=$('sUrl').value.trim();if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;
 var f=$('sImg').files[0];
-function add(img){sites.push({id:Date.now(),url:u,name:$('sName').value.trim(),img:img||''});save('y_sites',sites);$('sUrl').value='';$('sName').value='';$('sImg').value='';renderSites()}
+function add(img){sites.push({id:Date.now(),url:u,name:$('sName').value.trim(),img:img||''});saveUserData();$('sUrl').value='';$('sName').value='';$('sImg').value='';renderSites()}
 if(f)shrink(f,add);else add('')};
 
-$('sList').addEventListener('click',function(e){var x=e.target.dataset.x;if(x&&confirm('O‘chirilsinmi?')){sites=sites.filter(function(s){return s.id!=x});save('y_sites',sites);renderSites()}});
-renderSites();
+$('sList').addEventListener('click',function(e){var x=e.target.dataset.x;if(x&&confirm('O‘chirilsinmi?')){sites=sites.filter(function(s){return s.id!=x});saveUserData();renderSites()}});
 
-/* ===== Kirish va ro'yxatdan o'tish ===== */
-// var GOOGLE_CLIENT_ID='926831343170-nu6nd007rq8duanf5fgvbolt9dsv01d3.apps.googleusercontent.com';   // <-- Google Client ID ni shu yerga qo'ying
+/* ===== Kirish va Ro'yxatdan O'tish (Firebase Auth) ===== */
 var mode='login';
 
 function av(n){return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>')}
 
-function getUsers(){try{return JSON.parse(localStorage.getItem('y_users'))||{}}catch(e){return {}}}
-function setUsers(u){try{localStorage.setItem('y_users',JSON.stringify(u))}catch(e){}}
-function toHex(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2)}).join('')}
-function hashPw(pw,salt){
-var s=salt+':'+pw;
-if(window.crypto&&crypto.subtle&&window.TextEncoder){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(toHex)}
-var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;
-return Promise.resolve('x'+h)}
-
-/* hisobga kirgach: ma'lumotlarni yuklash */
-function enter(m){UID=m.id;
-tasks=load('y_tasks');debts=load('y_debts');sites=load('y_sites');
-$('meImg').src=m.avatarUrl;$('meImg').title=m.name||'';
-$('login').style.display='none';$('app').style.display='block';
-renderTasks();renderDebts();renderSites();check()}
-
-function finish(m){try{localStorage.setItem('y_session',JSON.stringify(m))}catch(e){}enter(m)}
-
-/* Kirish / Ro'yxatdan o'tish rejimi */
 function setMode(m){mode=m;
 $('tabLogin').classList.toggle('on',m==='login');
 $('tabReg').classList.toggle('on',m==='reg');
 $('lPass2').style.display=m==='reg'?'block':'none';
 $('lBtn').textContent=m==='reg'?'Ro‘yxatdan o‘tish':'Kirish';
-$('lSub').textContent=m==='reg'?'Yangi login va parol yarating':'Hisobingizga kiring';
+$('lSub').textContent=m==='reg'?'Yangi email va parol yarating':'Hisobingizga kiring';
 $('lErr').textContent=''}
 
 function submitAuth(){
-var lg=$('lLogin').value.trim(),pw=$('lPass').value,err=$('lErr');err.textContent='';
-if(lg.length<3){err.textContent='Login kamida 3 ta belgidan iborat bo‘lsin';return}
-if(pw.length<4){err.textContent='Parol kamida 4 ta belgidan iborat bo‘lsin';return}
-var key=lg.toLowerCase(),users=getUsers();
-if(mode==='reg'){
-if(users[key]){err.textContent='Bu login band. Boshqa login tanlang';return}
-if(pw!==$('lPass2').value){err.textContent='Parollar bir xil emas';return}
-var salt=String(Date.now())+Math.random();
-hashPw(pw,salt).then(function(h){
-users[key]={salt:salt,hash:h,name:lg};setUsers(users);
-finish({id:'l_'+encodeURIComponent(key),name:lg,avatarUrl:av(lg)})});
-}else{
-var u=users[key];
-if(!u){err.textContent='Bunday login topilmadi. Avval ro‘yxatdan o‘ting';return}
-hashPw(pw,u.salt).then(function(h){
-if(h!==u.hash){err.textContent='Parol noto‘g‘ri';return}
-finish({id:'l_'+encodeURIComponent(key),name:u.name,avatarUrl:av(u.name)})})}}
+  var lg = $('lLogin').value.trim(), pw = $('lPass').value, err = $('lErr');
+  err.textContent = '';
+  
+  // Foydalanuvchi oddiy login kiritsa, uni Firebase email formatiga o'tkazamiz
+  var email = lg.includes('@') ? lg : lg.toLowerCase() + '@yordamchi.app';
+
+  if(lg.length < 3){ err.textContent = 'Login kamida 3 ta belgidan iborat bo‘lsin'; return; }
+  if(pw.length < 6){ err.textContent = 'Parol kamida 6 ta belgidan iborat bo‘lsin'; return; }
+
+  if(mode === 'reg'){
+    if(pw !== $('lPass2').value){ err.textContent = 'Parollar bir xil emas'; return; }
+    
+    auth.createUserWithEmailAndPassword(email, pw)
+      .then(function(userCredential) {
+        var user = userCredential.user;
+        return user.updateProfile({ displayName: lg });
+      })
+      .catch(function(error) {
+        if(error.code === 'auth/email-already-in-use'){
+          err.textContent = 'Bu login band. Boshqa login tanlang';
+        } else {
+          err.textContent = error.message;
+        }
+      });
+  } else {
+    auth.signInWithEmailAndPassword(email, pw)
+      .catch(function(error) {
+        err.textContent = 'Login yoki parol noto‘g‘ri';
+      });
+  }
+}
+
+// Firebase tizimga kirganlik holatini avtomatik kuzatib boradi
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    UID = user.uid;
+    var name = user.displayName || user.email.split('@')[0];
+    $('meImg').src = user.photoURL || av(name);
+    $('meImg').title = name;
+    $('login').style.display = 'none';
+    $('app').style.display = 'block';
+    loadUserData();
+  } else {
+    UID = '';
+    $('login').style.display = 'flex';
+    $('app').style.display = 'none';
+  }
+});
 
 /* Google bilan kirish */
-function parseJwt(t){try{var b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(b))))}catch(e){return null}}
-function onGoogle(r){var p=parseJwt(r.credential);
-if(!p||!p.sub){$('lErr').textContent='Google bilan kirib bo‘lmadi';return}
-finish({id:'g_'+p.sub,name:p.name||p.email||'Foydalanuvchi',avatarUrl:p.picture||av(p.name)})}
+$('gBtn').onclick = function() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(function(error) {
+    $('lErr').textContent = 'Google bilan kirib bo‘lmadi: ' + error.message;
+  });
+};
 
-function initGoogle(){
-if(!GOOGLE_CLIENT_ID){
-$('gBtn').innerHTML='<button type="button" class="gfake" id="gFake">Google bilan kirish</button>';
-$('gFake').onclick=function(){$('lErr').textContent='Google ishlashi uchun script.js ichiga Client ID kiriting'};
-return}
-var s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;
-s.onload=function(){
-google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogle});
-google.accounts.id.renderButton($('gBtn'),{theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:300})};
-s.onerror=function(){$('lErr').textContent='Google yuklanmadi. Internetni tekshiring'};
-document.head.appendChild(s)}
-
-/* tugmalar */
+/* Tugmalar voqealari */
 $('tabLogin').onclick=function(){setMode('login')};
 $('tabReg').onclick=function(){setMode('reg')};
 $('lBtn').onclick=submitAuth;
 ['lLogin','lPass','lPass2'].forEach(function(id){$(id).addEventListener('keydown',function(e){if(e.key==='Enter')submitAuth()})});
 $('eye').onclick=function(){var t=$('lPass').type==='password'?'text':'password';$('lPass').type=t;$('lPass2').type=t};
-$('out').onclick=function(){try{localStorage.removeItem('y_session')}catch(e){}location.reload()};
 
-/* oldin kirgan bo'lsa, avtomatik kirish */
-var ses=null;try{ses=JSON.parse(localStorage.getItem('y_session'))}catch(e){}
-if(ses&&ses.id)enter(ses);else initGoogle();
+$('out').onclick=function(){
+  auth.signOut().then(function() {
+    location.reload();
+  });
+};
