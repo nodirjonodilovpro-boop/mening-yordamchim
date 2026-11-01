@@ -100,7 +100,7 @@ $('sList').addEventListener('click',function(e){var x=e.target.dataset.x;if(x&&c
 renderSites();
 
 /* ===== Kirish va ro'yxatdan o'tish ===== */
-var GOOGLE_CLIENT_ID='926831343170-nu6nd007rq8duanf5fgvbolt9dsv01d3.apps.googleusercontent.com';   // <-- Google Client ID ni shu yerga qo'ying
+// var GOOGLE_CLIENT_ID='926831343170-nu6nd007rq8duanf5fgvbolt9dsv01d3.apps.googleusercontent.com';   // <-- Google Client ID ni shu yerga qo'ying
 var mode='login';
 
 function av(n){return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>')}
