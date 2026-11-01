@@ -351,15 +351,3 @@ input, select {
   display: block;
   margin-bottom: 6px;
 }
-.top h1 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.top-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  object-fit: cover;
-}
