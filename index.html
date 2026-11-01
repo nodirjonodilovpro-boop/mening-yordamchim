@@ -88,7 +88,7 @@
 
 <script src="script.js"></script>
 </body>
-<!-- Firebase SDK CDN -->
+<!-- Firebase SDK v10 (Compat versiyasi) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -107,12 +107,10 @@
 
   // Firebase-ni ishga tushirish
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  var auth = firebase.auth();
+  var db = firebase.firestore();
 </script>
 
-<!-- Asosiy skript fayli eng oxirida ulanishi kerak -->
+<!-- Asosiy skript fayli -->
 <script src="script.js"></script>
-</body>
-</script>
 </html>
