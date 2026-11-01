@@ -94,6 +94,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
+  // Firebase konfiguratsiyasi
   const firebaseConfig = {
     apiKey: "AIzaSyCPLdynEIb9isrg2StOm_VX-r9GFzJtm-Y",
     authDomain: "mening-yordamchim-e6fd6.firebaseapp.com",
@@ -104,10 +105,12 @@
     measurementId: "G-Q6BGEX1Y6X"
   };
 
+  // Firebase-ni ishga tushirish (global o'zgaruvchilar)
   firebase.initializeApp(firebaseConfig);
-  var auth = firebase.auth();
-  var db = firebase.firestore();
+  window.auth = firebase.auth();
+  window.db = firebase.firestore();
 </script>
 
+<!-- Asosiy skript fayli eng oxirida joylashishi shart -->
 <script src="script.js"></script>
 </html>
