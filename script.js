@@ -3,17 +3,13 @@ function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&am
 function $(id){return document.getElementById(id)}
 var UID='', tasks=[], debts=[], sites=[];
 
-/* ===== Tungi / Kungi Rejim (Theme) ===== */
-var currentTheme = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', currentTheme);
-$('themeBtn').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-
-$('themeBtn').onclick = function() {
-  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  localStorage.setItem('theme', currentTheme);
-  $('themeBtn').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-};
+// Mavzu o'zgartirish knopkasi bosilganda
+themeBtn.addEventListener('click', () => {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+});
 
 /* ===== Menyu ===== */
 $('nav').addEventListener('click', function(e) {
