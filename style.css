@@ -77,11 +77,15 @@ body {
   gap: 10px;
 }
 
+/* Profil avatari (N harfi yoki rasm) o'lchamini qat'iy cheklash */
 .me img {
-  width: 36px;
-  height: 36px;
+  width: 36px !important;
+  height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
   border-radius: 50%;
   object-fit: cover;
+  display: block;
 }
 
 .theme-toggle {
