@@ -49,7 +49,7 @@ body {
   padding-bottom: 80px;
 }
 
-/* TOP BAR */
+/* YUQORI BAR VA LOGOLAR */
 .top {
   display: flex;
   justify-content: space-between;
@@ -57,7 +57,19 @@ body {
   margin-bottom: 16px;
 }
 
-/* .top h1 { font-size: 1.2rem; } */ /* Bu joydagi xato tuzatildi */
+.top h1 {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-logo {
+  width: 28px !important;
+  height: 28px !important;
+  object-fit: cover;
+  border-radius: 6px;
+}
 
 .me {
   display: flex;
@@ -69,6 +81,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .theme-toggle {
@@ -84,7 +97,7 @@ body {
   cursor: pointer;
 }
 
-/* NAV */
+/* NAVIGATSIYA */
 nav {
   display: flex;
   gap: 8px;
@@ -109,7 +122,7 @@ nav button.on {
   border-color: var(--primary);
 }
 
-/* CARDS & INPUTS */
+/* KARTALAR VA INPUTLAR */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -149,7 +162,33 @@ input, select {
 
 .btn:hover { background: var(--primary-hover); }
 
-/* LIST ITEMS */
+.mini {
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* BILDIRISHNOMA BLOKI */
+.notif-box {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-box p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* RO'YXAT ELEMENTLARI */
 .item {
   display: flex;
   align-items: center;
@@ -164,7 +203,21 @@ input, select {
 .item .t small { display: block; color: var(--muted); font-size: 0.8rem; }
 .item .t small.late { color: var(--late); }
 
-/* CALCULATOR */
+/* BO'SH HOLAT (EMPTY STATE) */
+.empty-box {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.empty-box span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* KALKULYATOR */
 .calc #disp {
   font-size: 2rem;
   text-align: right;
@@ -194,7 +247,7 @@ input, select {
 .keys button.op { background: var(--primary); color: #fff; }
 .keys button.eq { background: var(--plus); color: #fff; }
 
-/* SITES */
+/* SAYTLAR */
 .sites {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -209,7 +262,88 @@ input, select {
   text-align: center;
 }
 
-/* MOBILE NAVBAR FIX */
+.site .pic {
+  height: 60px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* KIRISH OYNASI (LOGIN CARD) */
+#login {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 99;
+}
+
+.lcard {
+  width: 100%;
+  max-width: 360px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.logo img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 0 auto 12px auto;
+  display: block;
+}
+
+.tabs {
+  display: flex;
+  margin: 16px 0;
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tabs button.on { background: var(--primary); color: #fff; }
+
+.pw { position: relative; margin: 8px 0; }
+#eye { position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; }
+#lErr { color: var(--late); font-size: 0.85rem; margin-top: 8px; }
+
+/* ALARM */
+#alarm {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  display: none;
+  z-index: 100;
+}
+
+/* MOBIL EKROAN UCHUN NAV FIX */
 @media (max-width: 480px) {
   nav {
     position: fixed;
@@ -222,17 +356,4 @@ input, select {
     border-top: 1px solid var(--border);
     z-index: 10;
   }
-}
-
-.empty-box {
-  text-align: center;
-  padding: 24px 16px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.empty-box span {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 6px;
 }
