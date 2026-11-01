@@ -1,98 +1,143 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mening yordamchim</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mening yordamchim</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- KIRISH OYNASI -->
-<div id="login"><div class="lcard">
-<div class="logo">
-  <img src="/logo.jpg" alt="Mening yordamchim">
-</div><h2>Mening yordamchim</h2>
-<p id="lSub">Hisobingizga kiring</p>
+<div id="login">
+  <div class="lcard">
+    <div class="logo">
+      <img src="/logo.jpg" alt="Mening yordamchim">
+    </div>
+    <h2>Mening yordamchim</h2>
+    <p id="lSub">Hisobingizga kiring</p>
 
-<div class="tabs">
-<button type="button" id="tabLogin" class="on">Kirish</button>
-<button type="button" id="tabReg">Ro‘yxatdan o‘tish</button>
+    <div class="tabs">
+      <button type="button" id="tabLogin" class="on">Kirish</button>
+      <button type="button" id="tabReg">Ro‘yxatdan o‘tish</button>
+    </div>
+
+    <input id="lLogin" placeholder="Login" autocomplete="username">
+    <div class="pw">
+      <input id="lPass" type="password" placeholder="Parol" autocomplete="current-password">
+      <button type="button" id="eye" title="Ko‘rsatish">👁</button>
+    </div>
+    <input id="lPass2" type="password" placeholder="Parolni takrorlang" style="display:none" autocomplete="new-password">
+
+    <button id="lBtn" type="button">Kirish</button>
+    <div id="lErr"></div>
+
+    <div class="or"><span></span></div>
+    <div id="gBtn"></div>
+  </div>
 </div>
-
-<input id="lLogin" placeholder="Login" autocomplete="username">
-<div class="pw">
-<input id="lPass" type="password" placeholder="Parol" autocomplete="current-password">
-<button type="button" id="eye" title="Ko‘rsatish">👁</button>
-</div>
-<input id="lPass2" type="password" placeholder="Parolni takrorlang" style="display:none" autocomplete="new-password">
-
-<button id="lBtn" type="button">Kirish</button>
-<div id="lErr"></div>
-
-<div class="or"><span></span></div>
-<div id="gBtn"></div>
-</div></div>
 
 <!-- ASOSIY SAHIFA -->
 <div class="wrap" id="app" style="display:none">
-<div class="top"><h1>📋 Mening yordamchim</h1><div class="me"><img id="meImg" alt=""><button class="mini" id="out">Chiqish</button></div></div>
-<nav id="nav">
-<button data-s="ishlar" class="on">✅ Ishlar</button>
-<button data-s="calc">🧮 Hisob</button>
-<button data-s="qarz">💰 Qarzlar</button>
-<button data-s="saytlar">🌐 Saytlarim</button>
-</nav>
+  <div class="top">
+    <h1>📋 Mening yordamchim</h1>
+    <div class="me">
+      <button class="theme-toggle" id="themeBtn" title="Mavzuni o‘zgartirish">🌙</button>
+      <img id="meImg" alt="Profil" title="Profil">
+      <button class="mini" id="out">Chiqish</button>
+    </div>
+  </div>
 
-<section id="ishlar" class="sec on">
-<div class="card">
-<div class="row1"><input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)"></div>
-<div class="row"><input id="tDate" type="date"><input id="tTime" type="time"></div>
-<button class="btn" id="tAdd">Ish qo‘shish</button>
-<p><small style="color:var(--muted)">Eslatma sahifa ochiq turganda vaqti kelganda ovoz va xabar bilan chiqadi.</small></p>
-<button class="mini" id="notifBtn">🔔 Bildirishnomaga ruxsat berish</button>
+  <nav id="nav">
+    <button data-s="ishlar" class="on">✅ Ishlar</button>
+    <button data-s="calc">🧮 Hisob</button>
+    <button data-s="qarz">💰 Qarzlar</button>
+    <button data-s="saytlar">🌐 Saytlarim</button>
+  </nav>
+
+  <!-- ISHLAR BO'LIMI -->
+  <section id="ishlar" class="sec on">
+    <div class="card">
+      <div class="row1">
+        <input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)">
+      </div>
+      <div class="row">
+        <input id="tDate" type="date">
+        <input id="tTime" type="time">
+      </div>
+      <button class="btn" id="tAdd">Ish qo‘shish</button>
+      
+      <div class="notif-box">
+        <p>⏰ Eslatma sahifa ochiq turganda vaqti kelganda ovoz va xabar bilan chiqadi.</p>
+        <button class="mini" id="notifBtn">🔔 Bildirishnomaga ruxsat berish</button>
+      </div>
+    </div>
+    <div class="card" id="tList"></div>
+  </section>
+
+  <!-- HISOB BO'LIMI -->
+  <section id="calc" class="sec">
+    <div class="card calc">
+      <div id="disp">0</div>
+      <div class="keys" id="keys"></div>
+    </div>
+  </section>
+
+  <!-- QARZLAR BO'LIMI -->
+  <section id="qarz" class="sec">
+    <div class="card">
+      <div class="row">
+        <input id="qIsm" placeholder="Ism">
+        <input id="qFam" placeholder="Familiya">
+      </div>
+      <div class="row">
+        <input id="qTel" type="tel" placeholder="Telefon raqam">
+        <input id="qSum" type="number" inputmode="decimal" placeholder="Pul miqdori">
+      </div>
+      <div class="row">
+        <select id="qTur">
+          <option value="berdim">Men berdim (menga qaytaradi)</option>
+          <option value="oldim">Men oldim (men qaytaraman)</option>
+        </select>
+        <input id="qIzoh" placeholder="Izoh (ixtiyoriy)">
+      </div>
+      <button class="btn" id="qAdd">Saqlash</button>
+    </div>
+    <div class="card"><div class="sum" id="qSum2"></div></div>
+    <div class="card">
+      <input id="qFind" placeholder="🔍 Ism yoki raqam bo‘yicha qidirish">
+      <div id="qList"></div>
+    </div>
+  </section>
+
+  <!-- SAYTLAR BO'LIMI -->
+  <section id="saytlar" class="sec">
+    <div class="card">
+      <div class="row1">
+        <input id="sUrl" placeholder="Sayt linki (https://...)">
+      </div>
+      <div class="row">
+        <input id="sName" placeholder="Sayt nomi (ixtiyoriy)">
+        <input id="sImg" type="file" accept="image/*">
+      </div>
+      <button class="btn" id="sAdd">Saytni qo‘shish</button>
+      <p><small style="color:var(--muted)">Sayt rasmini (skrinshot) tanlasangiz kartada chiqadi. Tanlamasangiz, chiroyli rangli karta chiqadi. Kartaga bossangiz sayt ochiladi.</small></p>
+    </div>
+    <div class="sites" id="sList"></div>
+  </section>
 </div>
-<div class="card" id="tList"></div>
-</section>
 
-<section id="calc" class="sec">
-<div class="card calc">
-<div id="disp">0</div>
-<div class="keys" id="keys"></div>
-</div>
-</section>
-
-<section id="qarz" class="sec">
-<div class="card">
-<div class="row"><input id="qIsm" placeholder="Ism"><input id="qFam" placeholder="Familiya"></div>
-<div class="row"><input id="qTel" type="tel" placeholder="Telefon raqam"><input id="qSum" type="number" inputmode="decimal" placeholder="Pul miqdori"></div>
-<div class="row"><select id="qTur"><option value="berdim">Men berdim (menga qaytaradi)</option><option value="oldim">Men oldim (men qaytaraman)</option></select><input id="qIzoh" placeholder="Izoh (ixtiyoriy)"></div>
-<button class="btn" id="qAdd">Saqlash</button>
-</div>
-<div class="card"><div class="sum" id="qSum2"></div></div>
-<div class="card"><input id="qFind" placeholder="🔍 Ism yoki raqam bo‘yicha qidirish"><div id="qList"></div></div>
-</section>
-
-<section id="saytlar" class="sec">
-<div class="card">
-<div class="row1"><input id="sUrl" placeholder="Sayt linki (https://...)"></div>
-<div class="row"><input id="sName" placeholder="Sayt nomi (ixtiyoriy)"><input id="sImg" type="file" accept="image/*"></div>
-<button class="btn" id="sAdd">Saytni qo‘shish</button>
-<p><small style="color:var(--muted)">Sayt rasmini (skrinshot) tanlasangiz kartada chiqadi. Tanlamasangiz, chiroyli rangli karta chiqadi. Kartaga bossangiz sayt ochiladi.</small></p>
-</div>
-<div class="sites" id="sList"></div>
-</section>
+<div id="alarm">
+  <div id="alarmT"></div>
+  <button id="alarmX">Yopish</button>
 </div>
 
-<div id="alarm"><div id="alarmT"></div><button id="alarmX">Yopish</button></div>
-
-<!-- Firebase SDK v10 (Compat rejimida) -->
+<!-- Firebase SDK v10 (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase konfiguratsiyasi
   const firebaseConfig = {
     apiKey: "AIzaSyDQL5eLdx0hIpqyQr3PNDz-NqqiuSqgzrg",
     authDomain: "mening-yordamchim-e6fd6.firebaseapp.com",
@@ -103,13 +148,11 @@
     measurementId: "G-Q6BGEX1Y6X"
   };
 
-  // Firebase-ni ishga tushirish (global o'zgaruvchilar)
   firebase.initializeApp(firebaseConfig);
   window.auth = firebase.auth();
   window.db = firebase.firestore();
 </script>
 
-<!-- Asosiy skript fayli faqat eng oxirida ulanishi shart -->
 <script src="script.js"></script>
 </body>
 </html>
