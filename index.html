@@ -5,6 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mening yordamchim</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Hafta kunlari tugmalari uchun qo'shimcha stillar */
+    .week-selector {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .week-btn {
+      background: var(--bg-secondary, #2a3454);
+      color: var(--text-color, #fff);
+      border: 1px solid var(--border-color, #3f4d75);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .week-btn.on {
+      background: #6366f1;
+      color: #fff;
+      border-color: #6366f1;
+      font-weight: bold;
+    }
+    .selected-day-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #818cf8;
+    }
+  </style>
 </head>
 <body>
 
@@ -42,10 +75,10 @@
   <div class="top">
     <h1><img src="logo.jpg" alt="Logo" class="top-logo" style="width: 28px !important; height: 28px !important; object-fit: cover; border-radius: 6px;"> Mening yordamchim</h1>
     <div class="me">
-     <button class="theme-toggle" id="themeBtn" title="Mavzuni o‘zgartirish">
-  <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-  <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-</button>
+      <button class="theme-toggle" id="themeBtn" title="Mavzuni o‘zgartirish">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <img id="meImg" alt="Profil" title="Profil" style="width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; border-radius: 50%; object-fit: cover; display: block;">
       <button class="mini" id="out">Chiqish</button>
     </div>
@@ -58,14 +91,26 @@
     <button data-s="saytlar">🌐 Saytlarim</button>
   </nav>
 
-  <!-- ISHLAR BO'LIMI -->
+  <!-- ISHLAR BO'LIMI (Hafta kunlari bilan yangilandi) -->
   <section id="ishlar" class="sec on">
     <div class="card">
+      <!-- Hafta kunlarini tanlash paneli -->
+      <div class="week-selector" id="weekSelector">
+        <button class="week-btn on" data-day="Dushanba">Dushanba</button>
+        <button class="week-btn" data-day="Seshanba">Seshanba</button>
+        <button class="week-btn" data-day="Chorshanba">Chorshanba</button>
+        <button class="week-btn" data-day="Payshanba">Payshanba</button>
+        <button class="week-btn" data-day="Juma">Juma</button>
+        <button class="week-btn" data-day="Shanba">Shanba</button>
+        <button class="week-btn" data-day="Yakshanba">Yakshanba</button>
+      </div>
+
+      <div class="selected-day-header" id="selectedDayTitle">📌 Dushanba kuni uchun ishlar</div>
+
       <div class="row1">
         <input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)">
       </div>
       <div class="row">
-        <input id="tDate" type="date">
         <input id="tTime" type="time">
       </div>
       <button class="btn" id="tAdd">Ish qo‘shish</button>

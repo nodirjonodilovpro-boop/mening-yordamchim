@@ -1,15 +1,22 @@
 /* ===== Yordamchi funksiyalar ===== */
-function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function $(id){return document.getElementById(id)}
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function $(id){ return document.getElementById(id); }
 var UID='', tasks=[], debts=[], sites=[];
+var currentSelectedDay = "Dushanba"; // Boshlang'ich tanlangan hafta kuni
 
 // Mavzu o'zgartirish knopkasi bosilganda
-themeBtn.addEventListener('click', () => {
+$('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
 });
+
+// Saqlangan mavzuni yuklash
+(function() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+})();
 
 /* ===== Menyu ===== */
 $('nav').addEventListener('click', function(e) {
@@ -45,48 +52,82 @@ function saveUserData() {
   }, { merge: true });
 }
 
-/* ===== Kundalik ishlar ===== */
-var d0 = new Date();
-$('tDate').value = d0.getFullYear() + '-' + String(d0.getMonth()+1).padStart(2,'0') + '-' + String(d0.getDate()).padStart(2,'0');
+/* ===== Hafta Kunlari Bilan Ishlash ===== */
 
-// Sana formatini uzbekcha (kun.oy.yil) qilish
-function fmtDate(dStr) {
-  if(!dStr) return '';
-  var p = dStr.split('-');
-  return p[2] + '.' + p[1] + '.' + p[0];
+// Hafta kuni tugmalari bosilganda
+const weekSelector = $('weekSelector');
+if (weekSelector) {
+  weekSelector.addEventListener('click', function(e) {
+    const btn = e.target.closest('.week-btn');
+    if (!btn) return;
+
+    // Aktiv tugma stilini almashtirish
+    document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+
+    // Tanlangan kunni yangilash
+    currentSelectedDay = btn.dataset.day;
+    $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' kuni uchun ishlar';
+
+    renderTasks();
+  });
 }
 
 function renderTasks() {
-  var l = tasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.date+a.time) > (b.date+b.time) ? 1 : -1); });
-  var now = new Date();
+  // Faqat tanlangan hafta kuniga tegishli ishlarni saralash va filtrlash
+  var dayTasks = tasks.filter(function(t) { return t.day === currentSelectedDay; });
+  var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
+
   $('tList').innerHTML = l.length ? l.map(function(t) {
-    var late = !t.done && t.date && new Date(t.date + 'T' + (t.time || '23:59')) < now;
-    return '<div class="item '+(t.done?'done':'')+'">' +
-      '<input type="checkbox" style="width:22px;height:22px" '+(t.done?'checked':'')+' data-d="'+t.id+'">' +
-      '<div class="t"><b>'+esc(t.text)+'</b><small class="'+(late?'late':'')+'">'+esc(fmtDate(t.date))+' '+esc(t.time||'')+(late?' · kechikdi':'')+'</small></div>' +
+    return '<div class="item '+(t.done ? 'done' : '')+'">' +
+      '<input type="checkbox" style="width:22px;height:22px" '+(t.done ? 'checked' : '')+' data-d="'+t.id+'">' +
+      '<div class="t"><b>'+esc(t.text)+'</b><small>⏰ '+esc(t.time || 'Vaqt belgilanmagan')+'</small></div>' +
       '<button class="mini" data-x="'+t.id+'">✕</button></div>';
-  }).join('') : '<div class="empty-box"><span>📝</span>Hozircha ish yo‘q</div>';
+  }).join('') : '<div class="empty-box"><span>📝</span>'+currentSelectedDay+' kuni uchun ishlar yo‘q</div>';
 }
 
+// Yangi ish qo'shish
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   if(!tx) return;
-  tasks.push({ id: Date.now(), text: tx, date: $('tDate').value, time: $('tTime').value, done: false, notified: false });
-  saveUserData(); $('tText').value = ''; renderTasks();
+
+  tasks.push({ 
+    id: Date.now(), 
+    text: tx, 
+    day: currentSelectedDay, // Tanlangan hafta kuni saqlanadi
+    time: $('tTime').value, 
+    done: false, 
+    notified: false 
+  });
+
+  saveUserData(); 
+  $('tText').value = ''; 
+  $('tTime').value = '';
+  renderTasks();
 };
 
+// Checkbox belgilash yoki ishni o'chirish
 $('tList').addEventListener('click', function(e) {
   var d = e.target.dataset;
   if(d.d) {
     var t = tasks.find(function(x){ return x.id == d.d; });
     if(t) { t.done = e.target.checked; saveUserData(); renderTasks(); }
   }
-  if(d.x) { tasks = tasks.filter(function(x){ return x.id != d.x; }); saveUserData(); renderTasks(); }
+  if(d.x) { 
+    tasks = tasks.filter(function(x){ return x.id != d.x; }); 
+    saveUserData(); 
+    renderTasks(); 
+  }
 });
 
 $('notifBtn').onclick = function() {
-  try { Notification.requestPermission().then(function(p){ if(p==='granted') alert('Bildirishnomaga ruxsat berildi!'); }); }
-  catch(e) { alert('Brauzer bildirishnomani qo‘llamaydi'); }
+  try { 
+    Notification.requestPermission().then(function(p){ 
+      if(p === 'granted') alert('Bildirishnomaga ruxsat berildi!'); 
+    }); 
+  } catch(e) { 
+    alert('Brauzer bildirishnomani qo‘llamaydi'); 
+  }
 };
 
 function beep() {
@@ -101,13 +142,22 @@ function beep() {
   } catch(e){}
 }
 
+// Bildirishnomalarni tekshirish (Bugungi hafta kuni va vaqti boyicha)
+const weekDaysMap = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+
 function check() {
-  var now = new Date(), hit = [];
+  var now = new Date();
+  var todayName = weekDaysMap[now.getDay()];
+  var currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  var hit = [];
+
   tasks.forEach(function(t) {
-    if(!t.done && !t.notified && t.date && t.time && new Date(t.date+'T'+t.time) <= now) {
-      t.notified = true; hit.push(t.text);
+    if(!t.done && !t.notified && t.day === todayName && t.time && t.time <= currentTimeStr) {
+      t.notified = true; 
+      hit.push(t.text);
     }
   });
+
   if(hit.length) {
     saveUserData(); renderTasks(); beep();
     $('alarmT').textContent = '⏰ Eslatma: ' + hit.join(' • ');
@@ -115,6 +165,7 @@ function check() {
     try { if(Notification.permission==='granted') new Notification('Eslatma', {body: hit.join(', ')}); } catch(e){}
   }
 }
+
 $('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
 setInterval(check, 15000);
 

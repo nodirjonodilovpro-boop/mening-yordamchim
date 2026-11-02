@@ -77,7 +77,6 @@ body {
   gap: 10px;
 }
 
-/* Profil avatari (N harfi yoki rasm) o'lchamini qat'iy cheklash */
 .me img {
   width: 36px !important;
   height: 36px !important;
@@ -116,11 +115,9 @@ body {
   transition: transform 0.4s ease, opacity 0.3s ease;
 }
 
-/* Tungi rejimda Oycha ko'rinadi, Quyosh berkinadi */
 .sun-icon { display: none; }
 .moon-icon { display: block; }
 
-/* Kungi rejimda (light) Quyosh ko'rinadi, Oycha berkinadi */
 [data-theme="light"] .sun-icon { display: block; color: #f59e0b; }
 [data-theme="light"] .moon-icon { display: none; }
 
@@ -147,6 +144,62 @@ nav button.on {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
+}
+
+/* HAFTA KUNLARI PANELI */
+.week-selector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  scrollbar-width: thin;
+}
+
+.week-selector::-webkit-scrollbar {
+  height: 4px;
+}
+
+.week-selector::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.week-btn {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.week-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.week-btn.on {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.selected-day-header {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* KARTALAR VA INPUTLAR */
@@ -370,7 +423,7 @@ input, select {
   z-index: 100;
 }
 
-/* MOBIL EKROAN UCHUN NAV FIX */
+/* MOBIL EKRAN UCHUN NAV FIX */
 @media (max-width: 480px) {
   nav {
     position: fixed;
