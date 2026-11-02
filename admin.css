@@ -1,0 +1,159 @@
+/* --- 1. Umumiy sozlamalar --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* --- 2. Asosiy konteyner (Chap menyu va o'ng qism uchun) --- */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- 3. Chap menyu (Sidebar) --- */
+.sidebar {
+    width: 260px;
+    background-color: #1e1e2d;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+.sidebar ul {
+    list-style: none;
+    flex: 1;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: #a2a5b9;
+    text-decoration: none;
+    display: block;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: #363740;
+    color: #fff;
+}
+
+#logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    text-align: center;
+    margin-top: auto;
+}
+
+#logout-btn:hover {
+    background-color: #c0392b;
+}
+
+/* --- 4. Asosiy kontent qismi --- */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.content-section h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+/* --- 5. Statistika kartochkalari (Cards) --- */
+.cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    font-size: 15px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.card span {
+    display: block;
+    font-size: 28px;
+    color: #2d3748;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+/* --- 6. Jadvallar (Tables) --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+table th, table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #edf2f7;
+}
+
+table th {
+    background-color: #f8f9fa;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* --- 7. Jadval ichidagi tugmalar --- */
+table button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+table button:hover {
+    opacity: 0.85;
+}
