@@ -250,8 +250,77 @@ $('calcTabValyuta').onclick = function() {
   $('calcTabOddiy').classList.remove('on');
   $('calcOddiyBox').style.display = 'none';
   $('calcValyutaBox').style.display = 'block';
-  convertCurrency();
+  fetchLiveRates(); // Kurslarni bankdan yangilash
 };
+
+// Oddiy Kalkulyator mantiqi
+var cur='0', acc=null, op=null, fresh=true;
+var KEYS=['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0','.','='];
+$('keys').innerHTML = KEYS.map(function(k){
+  var c = ('÷×−+%'.indexOf(k)>-1 || k==='C'||k==='⌫'||k==='±') ? 'op' : (k==='=' ? 'eq' : '');
+  return '<button class="'+c+'">'+k+'</button>';
+}).join('');
+
+function calc(a,b,o){ return o==='+'?a+b : o==='−'?a-b : o==='×'?a*b : o==='÷'?(b===0?NaN:a/b):b; }
+function fmt(n){ return isNaN(n)?'Xato':String(parseFloat(n.toPrecision(12))); }
+
+$('keys').addEventListener('click', function(e) {
+  var k = e.target.textContent; if(e.target.tagName !== 'BUTTON') return;
+  if(/[0-9]/.test(k)){ cur = (fresh || cur==='0') ? k : cur+k; fresh = false; }
+  else if(k==='.'){ if(fresh){ cur='0.'; fresh=false; } else if(cur.indexOf('.')<0) cur+='.'; }
+  else if(k==='C'){ cur='0'; acc=null; op=null; fresh=true; }
+  else if(k==='⌫'){ cur = cur.length>1 ? cur.slice(0,-1) : '0'; }
+  else if(k==='±'){ cur = cur==='0' ? cur : (cur[0]==='-' ? cur.slice(1) : '-'+cur); }
+  else if(k==='%'){ cur = fmt(parseFloat(cur)/100); fresh = true; }
+  else if(k==='='){ if(op!==null){ cur = fmt(calc(acc,parseFloat(cur),op)); acc=null; op=null; fresh=true; } }
+  else { if(op!==null && !fresh){ acc = calc(acc,parseFloat(cur),op); cur = fmt(acc); } else acc = parseFloat(cur); op=k; fresh=true; }
+  $('disp').textContent = cur;
+});
+
+// --- Valyuta Kalkulyatori (Bank real-vaqt kurslari bilan) ---
+var exchangeRates = {
+  "UZS": 1,
+  "USD": 12850,
+  "EUR": 13950,
+  "RUB": 138
+};
+
+// Kapitalbank / MB kunlik kurslarini onlayn yuklab olish
+function fetchLiveRates() {
+  fetch('https://cbu.uz/uz/arkhiv-kursov-valyut/json/')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(item => {
+        if (item.Ccy === 'USD') exchangeRates['USD'] = parseFloat(item.Rate);
+        if (item.Ccy === 'EUR') exchangeRates['EUR'] = parseFloat(item.Rate);
+        if (item.Ccy === 'RUB') exchangeRates['RUB'] = parseFloat(item.Rate);
+      });
+      convertCurrency();
+    })
+    .catch(err => {
+      console.warn("Onlayn kursni yuklashda xatolik, standart kurs ishlatilmoqda:", err);
+      convertCurrency();
+    });
+}
+
+function convertCurrency() {
+  var amount = parseFloat($('vSum').value) || 0;
+  var from = $('vFrom').value;
+  var to = $('vTo').value;
+
+  var amountInUZS = amount * exchangeRates[from];
+  var result = amountInUZS / exchangeRates[to];
+
+  var formattedResult = result.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+  $('vResult').innerText = formattedResult + ' ' + to;
+}
+
+$('vSum').oninput = convertCurrency;
+$('vFrom').onchange = convertCurrency;
+$('vTo').onchange = convertCurrency;
+
+// Boshlang'ich yuklanganda kurslarni olib kelish
+fetchLiveRates();
 
 // Oddiy Kalkulyator
 var cur='0', acc=null, op=null, fresh=true;
