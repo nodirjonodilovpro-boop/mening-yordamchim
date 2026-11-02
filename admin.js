@@ -22,45 +22,44 @@ const loginScreen = document.getElementById("login-screen");
 const adminMain = document.getElementById("admin-main");
 const googleLoginBtn = document.getElementById("google-login-btn");
 
-if (googleLoginBtn) {
-    googleLoginBtn.addEventListener("click", async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
+// Google orqali kirish tugmasi bosilganda
+googleLoginBtn.addEventListener("click", async () => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-           if (user.email !== ADMIN_EMAIL) {
-                alert("Xatolik! Kirgan pochta: " + user.email + " | Talab qilinadigan admin: " + ADMIN_EMAIL);
-                await signOut(auth);
-                window.location.href = "index.html";
-            }
-            else {
-                location.reload();
-            }
-        } catch (error) {
-            console.error("Kirishda xatolik:", error);
-            alert("Google orqali kirishda xatolik yuz berdi: " + error.message);
-        }
-    });
-}
-
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        if (user.email === ADMIN_EMAIL) {
-            if (loginScreen) loginScreen.style.display = "none";
-            if (adminMain) adminMain.style.display = "flex";
-            loadUsersTable();
-        } else {
-            alert("Sizda bu sahifaga kirish huquqi yo'q!");
+        if (user.email !== ADMIN_EMAIL) {
+            alert("Xatolik! Bu akkaunt admin emas.");
             await signOut(auth);
-            if (adminMain) adminMain.style.display = "none";
-            if (loginScreen) loginScreen.style.display = "flex";
+            window.location.href = "index.html";
         }
-    } else {
-        if (adminMain) adminMain.style.display = "none";
-        if (loginScreen) loginScreen.style.display = "flex";
+    } catch (error) {
+        console.error("Kirishda xatolik:", error);
     }
 });
 
+// Foydalanuvchi holatini kuzatish
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        if (user.email === ADMIN_EMAIL) {
+            // Admin kirdi - panelni ko'rsatamiz
+            loginScreen.style.display = "none";
+            adminMain.style.display = "flex";
+            loadUsersTable();
+        } else {
+            // Boshqa foydalanuvchi bo'lsa
+            alert("Sizda bu sahifaga kirish huquqi yo'q!");
+            await signOut(auth);
+            window.location.href = "index.html";
+        }
+    } else {
+        // Hali kirmagan bo'lsa - login oynasini chiqaramiz
+        adminMain.style.display = "none";
+        loginScreen.style.display = "flex";
+    }
+});
+
+// Foydalanuvchilarni chiqarish va tahrirlash
 async function loadUsersTable() {
     const tableBody = document.querySelector("#users-table tbody");
     if (!tableBody) return;
@@ -68,8 +67,7 @@ async function loadUsersTable() {
 
     try {
         const querySnapshot = await getDocs(collection(db, "users"));
-        const totalUsersEl = document.getElementById("total-users");
-        if (totalUsersEl) totalUsersEl.textContent = querySnapshot.size;
+        document.getElementById("total-users").textContent = querySnapshot.size;
 
         querySnapshot.forEach((documentSnap) => {
             const userData = documentSnap.data();
@@ -86,23 +84,21 @@ async function loadUsersTable() {
             tableBody.appendChild(row);
         });
     } catch (error) {
-        console.error("Ma'lumotlarni o'qishda xatolik:", error);
+        console.error("Xatolik:", error);
     }
 }
 
 window.saveUserChanges = async function(userId) {
-    const nameInput = document.getElementById(`name-${userId}`);
-    if (!nameInput) return;
-    const newName = nameInput.value;
+    const newName = document.getElementById(`name-${userId}`).value;
     try {
         await updateDoc(doc(db, "users", userId), { name: newName });
         alert("Muvaffaqiyatli yangilandi!");
     } catch (error) {
-        console.error("Yangilashda xatolik:", error);
         alert("Xatolik yuz berdi!");
     }
 }
 
+// Chiqish
 const logoutBtn = document.getElementById("logout-btn");
 if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
