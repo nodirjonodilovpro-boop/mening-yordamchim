@@ -10,6 +10,7 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
+// Raqamlarni probel bilan ajratish (100000 -> 100 000)
 function formatNumberInput(val) {
   var clean = val.replace(/\D/g, '');
   return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -28,7 +29,7 @@ $('vSum').addEventListener('input', function(e) {
   convertCurrency();
 });
 
-// Mavzu o'zgartirish
+// Mavzu o'zgartirish (Light / Dark)
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -41,7 +42,7 @@ $('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
-/* ===== Navigation ===== */
+/* ===== Navigation (Menyu bo'limlari) ===== */
 $('nav').addEventListener('click', function(e) {
   var b = e.target.closest('button');
   if(!b) return;
@@ -49,7 +50,7 @@ $('nav').addEventListener('click', function(e) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('on', s.id===b.dataset.s); });
 });
 
-/* ===== Firebase Baza ===== */
+/* ===== Firebase Baza (Ma'lumotlarni yuklash va saqlash) ===== */
 function loadUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).get().then(function(doc) {
@@ -372,7 +373,7 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== LOGIN VA PAROLLAR ===== */
+/* ===== LOGIN VA PAROLLAR BO'LIMI ===== */
 function renderPasswords() {
   var f = $('pFind').value.toLowerCase();
   var l = passwords.filter(function(p){ 
@@ -409,20 +410,6 @@ function copyPass(text) {
   });
 }
 
-function shrink(file, cb) {
-  var r = new FileReader();
-  r.onload = function(){
-    var im = new Image();
-    im.onload = function(){
-      var w = Math.min(300, im.width), h = im.height*w/im.width, c = document.createElement('canvas');
-      c.width = w; c.height = h; c.getContext('2d').drawImage(im,0,0,w,h);
-      cb(c.toDataURL('image/jpeg', .8));
-    };
-    im.src = r.result;
-  };
-  r.readAsDataURL(file);
-}
-
 $('pAdd').onclick = function() {
   var app = $('pApp').value.trim();
   var login = $('pLogin').value.trim();
@@ -441,7 +428,7 @@ $('pAdd').onclick = function() {
     renderPasswords();
   }
 
-  if(f) shrink(f, add); else add('');
+  if(f) shrinkProfileImg(f, add); else add('');
 };
 
 $('pList').addEventListener('click', function(e) {
@@ -460,7 +447,7 @@ $('meImg').onclick = function() {
   var user = auth.currentUser;
   if (user) {
     $('profileEmailDisplay').innerText = user.email;
-    $('profilePreviewImg').src = user.photoURL || $('meImg').src;
+    $('profilePreviewImg').src = $('meImg').src;
     $('profileModal').style.display = 'flex';
   }
 };
@@ -468,10 +455,37 @@ $('meImg').onclick = function() {
 $('closeProfileModal').onclick = function() {
   $('profileModal').style.display = 'none';
   $('profileErr').innerText = '';
+  $('currentAccountPassword').value = '';
+  $('newAccountPassword').value = '';
+  $('profileImgInput').value = '';
 };
+
+// Rasmni kichik o'lchamga keltirish (Firestore cheklovlaridan o'tish uchun)
+function shrinkProfileImg(file, cb) {
+  var r = new FileReader();
+  r.onload = function(){
+    var im = new Image();
+    im.onload = function(){
+      var maxDimension = 150;
+      var w = im.width, h = im.height;
+      if (w > h) {
+        if (w > maxDimension) { h *= maxDimension / w; w = maxDimension; }
+      } else {
+        if (h > maxDimension) { w *= maxDimension / h; h = maxDimension; }
+      }
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(im, 0, 0, w, h);
+      cb(c.toDataURL('image/jpeg', 0.8));
+    };
+    im.src = r.result;
+  };
+  r.readAsDataURL(file);
+}
 
 $('saveProfileBtn').onclick = function() {
   var user = auth.currentUser;
+  var currentPass = $('currentAccountPassword').value.trim();
   var newPass = $('newAccountPassword').value.trim();
   var imgFile = $('profileImgInput').files[0];
   var errEl = $('profileErr');
@@ -479,45 +493,69 @@ $('saveProfileBtn').onclick = function() {
 
   if (!user) return;
 
-  function updateAuthProfile(photoUrl) {
-    var promises = [];
+  function savePhotoToFirestore(base64Img) {
+    return db.collection('users').doc(user.uid).set({
+      photoData: base64Img
+    }, { merge: true }).then(function() {
+      $('meImg').src = base64Img;
+      $('profilePreviewImg').src = base64Img;
+    });
+  }
 
-    if (photoUrl) {
-      promises.push(user.updateProfile({ photoURL: photoUrl }));
+  var tasksToRun = [];
+
+  if (imgFile) {
+    tasksToRun.push(new Promise(function(resolve, reject) {
+      shrinkProfileImg(imgFile, function(base64Img) {
+        savePhotoToFirestore(base64Img).then(resolve).catch(reject);
+      });
+    }));
+  }
+
+  if (newPass) {
+    if (newPass.length < 6) {
+      errEl.innerText = 'Yangi parol kamida 6 ta belgidan iborat bo‘lishi kerak!';
+      return;
     }
-
-    if (newPass) {
-      if (newPass.length < 6) {
-        errEl.innerText = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak!';
-        return;
-      }
-      promises.push(user.updatePassword(newPass));
-    }
-
-    if (promises.length === 0) {
-      $('profileModal').style.display = 'none';
+    if (!currentPass) {
+      errEl.innerText = 'Parolni o‘zgartirish uchun hozirgi parolingizni kiriting!';
       return;
     }
 
-    Promise.all(promises).then(function() {
-      alert('Profil muvaffaqiyatli yangilandi!');
-      if (photoUrl) $('meImg').src = photoUrl;
-      $('newAccountPassword').value = '';
-      $('profileImgInput').value = '';
-      $('profileModal').style.display = 'none';
-    }).catch(function(error) {
-      console.error(error);
-      errEl.innerText = 'Xatolik: ' + error.message;
-    });
+    var credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+    
+    tasksToRun.push(
+      user.reauthenticateWithCredential(credential).then(function() {
+        return user.updatePassword(newPass);
+      })
+    );
   }
 
-  if (imgFile) {
-    shrink(imgFile, function(base64Img) {
-      updateAuthProfile(base64Img);
-    });
-  } else {
-    updateAuthProfile(null);
+  if (tasksToRun.length === 0) {
+    $('profileModal').style.display = 'none';
+    return;
   }
+
+  $('saveProfileBtn').disabled = true;
+  $('saveProfileBtn').innerText = 'Saqlanmoqda...';
+
+  Promise.all(tasksToRun).then(function() {
+    alert('Profil va ma\'lumotlar muvaffaqiyatli yangilandi!');
+    $('currentAccountPassword').value = '';
+    $('newAccountPassword').value = '';
+    $('profileImgInput').value = '';
+    $('profileModal').style.display = 'none';
+  }).catch(function(error) {
+    console.error(error);
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      errEl.innerText = 'Hozirgi parol noto‘g‘ri kiritildi!';
+    } else {
+      errEl.innerText = 'Xatolik: ' + error.message;
+    }
+  }).finally(function() {
+    $('saveProfileBtn').disabled = false;
+    $('saveProfileBtn').innerText = 'Saqlash';
+  });
 };
 
 /* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
@@ -562,7 +600,18 @@ auth.onAuthStateChanged(function(user) {
   if (user) {
     UID = user.uid;
     var name = user.displayName || user.email.split('@')[0];
-    $('meImg').src = user.photoURL || av(name);
+    
+    // Profil rasmini Firestore'dan olish
+    db.collection('users').doc(UID).get().then(function(doc) {
+      if (doc.exists && doc.data().photoData) {
+        $('meImg').src = doc.data().photoData;
+      } else {
+        $('meImg').src = user.photoURL || av(name);
+      }
+    }).catch(function() {
+      $('meImg').src = user.photoURL || av(name);
+    });
+
     $('login').style.display = 'none';
     $('app').style.display = 'block';
     loadUserData();
