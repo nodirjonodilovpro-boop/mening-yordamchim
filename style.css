@@ -436,4 +436,52 @@ input, select {
 .tabs button.on { background: var(--primary); color: #fff; }
 
 .pw { position: relative; margin: 8px 0; }
-#eye { position: absolute; right: 10px;
+#eye { position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; }
+#lErr { color: var(--late); font-size: 0.85rem; margin-top: 8px; }
+
+#lBtn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary, #818cf8);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 12px;
+  transition: background 0.2s ease;
+}
+
+#lBtn:hover {
+  background: var(--primary-hover, #6366f1);
+}
+
+/* ALARM */
+#alarm {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  display: none;
+  z-index: 100;
+}
+
+/* MOBIL EKRAN UCHUN NAV FIX */
+@media (max-width: 480px) {
+  nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    padding: 8px;
+    margin-bottom: 0;
+    border-top: 1px solid var(--border);
+    z-index: 10;
+  }
+}

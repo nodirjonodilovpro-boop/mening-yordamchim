@@ -10,7 +10,26 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
-// Mavzu o'zgartirish
+// Format number with spaces
+function formatNumberInput(val) {
+  var clean = val.replace(/\D/g, '');
+  return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+function parseNumber(val) {
+  return parseFloat(String(val).replace(/\s+/g, '')) || 0;
+}
+
+$('qSum').addEventListener('input', function(e) {
+  e.target.value = formatNumberInput(e.target.value);
+});
+
+$('vSum').addEventListener('input', function(e) {
+  e.target.value = formatNumberInput(e.target.value);
+  convertCurrency();
+});
+
+// Theme toggle
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -23,7 +42,7 @@ $('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
-/* ===== Menyu ===== */
+/* ===== Navigation ===== */
 $('nav').addEventListener('click', function(e) {
   var b = e.target.closest('button');
   if(!b) return;
@@ -31,7 +50,7 @@ $('nav').addEventListener('click', function(e) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('on', s.id===b.dataset.s); });
 });
 
-/* ===== Firebase Baza ===== */
+/* ===== Firebase DB ===== */
 function loadUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).get().then(function(doc) {
@@ -58,7 +77,7 @@ function saveUserData() {
   }, { merge: true });
 }
 
-/* ===== HAFTA VA SANALARINI HISOBLASH ===== */
+/* ===== Dates calculation ===== */
 function getMondayOfOffsetWeek(offsetWeeks) {
   var d = new Date();
   var day = d.getDay();
@@ -145,7 +164,7 @@ $('weekSelector').addEventListener('click', function(e) {
   renderTasks();
 });
 
-/* ===== ISHLAR RO'YXATI ===== */
+/* ===== Tasks list ===== */
 function renderTasks() {
   var dayTasks = tasks.filter(function(t) { return t.fullDate === currentSelectedDateStr; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
@@ -237,7 +256,7 @@ function check() {
 $('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
 setInterval(check, 15000);
 
-/* ===== ODDIY VA VALYUTA KALKULYATORI ===== */
+/* ===== Calculator ===== */
 $('calcTabOddiy').onclick = function() {
   $('calcTabOddiy').classList.add('on');
   $('calcTabValyuta').classList.remove('on');
@@ -250,10 +269,9 @@ $('calcTabValyuta').onclick = function() {
   $('calcTabOddiy').classList.remove('on');
   $('calcOddiyBox').style.display = 'none';
   $('calcValyutaBox').style.display = 'block';
-  fetchLiveRates(); // Kurslarni bankdan yangilash
+  fetchLiveRates();
 };
 
-// Oddiy Kalkulyator mantiqi
 var cur='0', acc=null, op=null, fresh=true;
 var KEYS=['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0','.','='];
 $('keys').innerHTML = KEYS.map(function(k){
@@ -277,15 +295,8 @@ $('keys').addEventListener('click', function(e) {
   $('disp').textContent = cur;
 });
 
-// --- Valyuta Kalkulyatori (Bank real-vaqt kurslari bilan) ---
-var exchangeRates = {
-  "UZS": 1,
-  "USD": 12850,
-  "EUR": 13950,
-  "RUB": 138
-};
+var exchangeRates = { "UZS": 1, "USD": 12850, "EUR": 13950, "RUB": 138 };
 
-// Kapitalbank / MB kunlik kurslarini onlayn yuklab olish
 function fetchLiveRates() {
   fetch('https://cbu.uz/uz/arkhiv-kursov-valyut/json/')
     .then(response => response.json())
@@ -298,13 +309,12 @@ function fetchLiveRates() {
       convertCurrency();
     })
     .catch(err => {
-      console.warn("Onlayn kursni yuklashda xatolik, standart kurs ishlatilmoqda:", err);
       convertCurrency();
     });
 }
 
 function convertCurrency() {
-  var amount = parseFloat($('vSum').value) || 0;
+  var amount = parseNumber($('vSum').value);
   var from = $('vFrom').value;
   var to = $('vTo').value;
 
@@ -315,62 +325,10 @@ function convertCurrency() {
   $('vResult').innerText = formattedResult + ' ' + to;
 }
 
-$('vSum').oninput = convertCurrency;
 $('vFrom').onchange = convertCurrency;
 $('vTo').onchange = convertCurrency;
 
-// Boshlang'ich yuklanganda kurslarni olib kelish
-fetchLiveRates();
-
-// Oddiy Kalkulyator
-var cur='0', acc=null, op=null, fresh=true;
-var KEYS=['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0','.','='];
-$('keys').innerHTML = KEYS.map(function(k){
-  var c = ('÷×−+%'.indexOf(k)>-1 || k==='C'||k==='⌫'||k==='±') ? 'op' : (k==='=' ? 'eq' : '');
-  return '<button class="'+c+'">'+k+'</button>';
-}).join('');
-
-function calc(a,b,o){ return o==='+'?a+b : o==='−'?a-b : o==='×'?a*b : o==='÷'?(b===0?NaN:a/b):b; }
-function fmt(n){ return isNaN(n)?'Xato':String(parseFloat(n.toPrecision(12))); }
-
-$('keys').addEventListener('click', function(e) {
-  var k = e.target.textContent; if(e.target.tagName !== 'BUTTON') return;
-  if(/[0-9]/.test(k)){ cur = (fresh || cur==='0') ? k : cur+k; fresh = false; }
-  else if(k==='.'){ if(fresh){ cur='0.'; fresh=false; } else if(cur.indexOf('.')<0) cur+='.'; }
-  else if(k==='C'){ cur='0'; acc=null; op=null; fresh=true; }
-  else if(k==='⌫'){ cur = cur.length>1 ? cur.slice(0,-1) : '0'; }
-  else if(k==='±'){ cur = cur==='0' ? cur : (cur[0]==='-' ? cur.slice(1) : '-'+cur); }
-  else if(k==='%'){ cur = fmt(parseFloat(cur)/100); fresh = true; }
-  else if(k==='='){ if(op!==null){ cur = fmt(calc(acc,parseFloat(cur),op)); acc=null; op=null; fresh=true; } }
-  else { if(op!==null && !fresh){ acc = calc(acc,parseFloat(cur),op); cur = fmt(acc); } else acc = parseFloat(cur); op=k; fresh=true; }
-  $('disp').textContent = cur;
-});
-
-// Valyuta Kalkulyatori
-var exchangeRates = {
-  "UZS": 1,
-  "USD": 12800,
-  "EUR": 13900,
-  "RUB": 135
-};
-
-function convertCurrency() {
-  var amount = parseFloat($('vSum').value) || 0;
-  var from = $('vFrom').value;
-  var to = $('vTo').value;
-
-  var amountInUZS = amount * exchangeRates[from];
-  var result = amountInUZS / exchangeRates[to];
-
-  var formattedResult = result.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
-  $('vResult').innerText = formattedResult + ' ' + to;
-}
-
-$('vSum').oninput = convertCurrency;
-$('vFrom').onchange = convertCurrency;
-$('vTo').onchange = convertCurrency;
-
-/* ===== QARZLAR ===== */
+/* ===== Debts ===== */
 function money(n){ return Number(n).toLocaleString('ru-RU'); }
 
 function renderDebts() {
@@ -389,10 +347,26 @@ function renderDebts() {
 }
 
 $('qAdd').onclick = function() {
-  var s = parseFloat($('qSum').value), ism = $('qIsm').value.trim();
+  var s = parseNumber($('qSum').value), ism = $('qIsm').value.trim();
   if(!ism || !s){ alert('Ism va pul miqdorini kiriting'); return; }
-  debts.push({ id: Date.now(), ism: ism, fam: $('qFam').value.trim(), tel: $('qTel').value.trim(), sum: s, tur: $('qTur').value, izoh: $('qIzoh').value.trim(), date: new Date().toLocaleDateString('ru-RU') });
-  saveUserData(); ['qIsm','qFam','qTel','qSum','qIzoh'].forEach(function(i){ $(i).value=''; }); renderDebts();
+
+  var rawTel = $('qTel').value.trim();
+  var fullTel = rawTel ? ($('qCode').value + ' ' + rawTel) : '';
+
+  debts.push({ 
+    id: Date.now(), 
+    ism: ism, 
+    fam: $('qFam').value.trim(), 
+    tel: fullTel, 
+    sum: s, 
+    tur: $('qTur').value, 
+    izoh: $('qIzoh').value.trim(), 
+    date: new Date().toLocaleDateString('ru-RU') 
+  });
+
+  saveUserData(); 
+  ['qIsm','qFam','qTel','qSum','qIzoh'].forEach(function(i){ $(i).value=''; }); 
+  renderDebts();
 };
 
 $('qList').addEventListener('click', function(e) {
@@ -401,7 +375,7 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== SAYTLARIM ===== */
+/* ===== Sites ===== */
 var colors = ['#4f46e5,#7c3aed','#0ea5e9,#2563eb','#10b981,#059669','#f59e0b,#ef4444'];
 function host(u){ try{ return new URL(u).hostname.replace('www.',''); }catch(e){ return u; } }
 
@@ -444,7 +418,7 @@ $('sList').addEventListener('click', function(e) {
   if(x && confirm('O‘chirilsinmi?')){ sites = sites.filter(function(s){ return s.id!=x; }); saveUserData(); renderSites(); }
 });
 
-/* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
+/* ===== Login / Registration ===== */
 var mode = 'login';
 function av(n){ return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>'); }
 
@@ -471,10 +445,12 @@ function submitAuth() {
     auth.createUserWithEmailAndPassword(email, pw).then(function(userCredential) {
       return userCredential.user.updateProfile({ displayName: lg });
     }).catch(function(error) {
+      console.error(error);
       err.textContent = error.code === 'auth/email-already-in-use' ? 'Bu login band.' : error.message;
     });
   } else {
-    auth.signInWithEmailAndPassword(email, pw).catch(function() {
+    auth.signInWithEmailAndPassword(email, pw).catch(function(error) {
+      console.error(error);
       err.textContent = 'Login yoki parol noto‘g‘ri';
     });
   }
@@ -497,7 +473,23 @@ auth.onAuthStateChanged(function(user) {
 
 $('tabLogin').onclick = function(){ setMode('login'); };
 $('tabReg').onclick = function(){ setMode('reg'); };
-$('lBtn').onclick = function(){ submitAuth(); };
-['lLogin','lPass','lPass2'].forEach(function(id){ $(id).addEventListener('keydown', function(e){ if(e.key==='Enter') submitAuth(); }); });
-$('eye').onclick = function(){ var t = $('lPass').type==='password'?'text':'password'; $('lPass').type=t; $('lPass2').type=t; };
-$('out').onclick = function(){ auth.signOut().then(function(){ location.reload(); }); };
+$('lBtn').onclick = function(e){ 
+  e.preventDefault();
+  submitAuth(); 
+};
+
+['lLogin','lPass','lPass2'].forEach(function(id){ 
+  $(id).addEventListener('keydown', function(e){ 
+    if(e.key==='Enter') submitAuth(); 
+  }); 
+});
+
+$('eye').onclick = function(){ 
+  var t = $('lPass').type==='password'?'text':'password'; 
+  $('lPass').type=t; 
+  $('lPass2').type=t; 
+};
+
+$('out').onclick = function(){ 
+  auth.signOut().then(function(){ location.reload(); }); 
+};
