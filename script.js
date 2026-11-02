@@ -171,10 +171,111 @@ function renderTasks() {
   }).join('') : '<div class="empty-box"><span>📝</span>Ushbu kunga rejalashtirilgan ishlar yo‘q</div>';
 }
 
+/* ===== 10 XIL BUDILNIK OVOZI GENERATORI ===== */
+function playSelectedAlarmSound(soundType) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var now = ctx.currentTime;
+    var st = String(soundType || '1');
+
+    if (st === '1') {
+      [0, 0.4, 0.8].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(880, now + d);
+        g.gain.setValueAtTime(0.3, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.25);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.3);
+      });
+    } else if (st === '2') {
+      for (var i = 0; i < 10; i++) {
+        var d = i * 0.12;
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'square'; o.frequency.setValueAtTime(1200, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.08);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.09);
+      }
+    } else if (st === '3') {
+      [0, 0.15, 0.3, 0.6, 0.75, 0.9].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle'; o.frequency.setValueAtTime(1046.5, now + d);
+        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.1);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.1);
+      });
+    } else if (st === '4') {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(600, now);
+      o.frequency.linearRampToValueAtTime(1500, now + 0.5);
+      o.frequency.linearRampToValueAtTime(600, now + 1.0);
+      g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now); o.stop(now + 1.2);
+    } else if (st === '5') {
+      var notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach(function(freq, idx) {
+        var d = idx * 0.25;
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.4);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.45);
+      });
+    } else if (st === '6') {
+      [440, 554.37, 659.25].forEach(function(freq) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
+        g.gain.setValueAtTime(0.15, now); g.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now); o.stop(now + 1.0);
+      });
+    } else if (st === '7') {
+      [0, 0.08, 0.16, 0.24, 0.32].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'square'; o.frequency.setValueAtTime(1760, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.05);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.06);
+      });
+    } else if (st === '8') {
+      [0, 0.1, 0.2, 0.3, 0.7, 0.8, 0.9, 1.0].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(1318.5, now + d);
+        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.08);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.09);
+      });
+    } else if (st === '9') {
+      [0, 0.3, 0.6, 0.9].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(900, now + d);
+        g.gain.setValueAtTime(0.35, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.2);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.22);
+      });
+    } else if (st === '10') {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(2093, now);
+      g.gain.setValueAtTime(0.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now); o.stop(now + 1.5);
+    }
+  } catch(e) {
+    console.error("Ovoz chalishda xatolik:", e);
+  }
+}
+
+$('testSoundBtn').onclick = function() {
+  var snd = $('tSound').value;
+  playSelectedAlarmSound(snd);
+};
+
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   var h = $('tHour').value;
   var m = $('tMin').value;
+  var snd = $('tSound').value || '1';
 
   if(!tx) {
     alert('Iltimos, ish nomini kiriting!');
@@ -189,6 +290,7 @@ $('tAdd').onclick = function() {
     fullDate: currentSelectedDateStr, 
     dayName: currentSelectedDayName,
     time: timeStr, 
+    sound: snd,
     done: false, 
     notified: false 
   });
@@ -223,33 +325,6 @@ $('notifBtn').onclick = function() {
   }
 };
 
-function playAlarmSound() {
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var now = ctx.currentTime;
-    
-    [0, 0.4, 0.8, 1.2].forEach(function(delay) {
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, now + delay);
-      osc.frequency.exponentialRampToValueAtTime(1760, now + delay + 0.2);
-      
-      gain.gain.setValueAtTime(0.3, now + delay);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.25);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start(now + delay);
-      osc.stop(now + delay + 0.3);
-    });
-  } catch(e) {
-    console.error("Ovoz chalishda xatolik:", e);
-  }
-}
-
 function checkReminders() {
   var now = new Date();
   var todayISO = formatDateISO(now);
@@ -259,18 +334,20 @@ function checkReminders() {
   var currentTimeStr = hours + ':' + minutes;
   
   var triggeredTasks = [];
+  var soundToPlay = '1';
 
   tasks.forEach(function(t) {
     if (!t.done && !t.notified && t.fullDate === todayISO && t.time === currentTimeStr) {
       t.notified = true;
       triggeredTasks.push(t.text);
+      if (t.sound) soundToPlay = t.sound;
     }
   });
 
   if (triggeredTasks.length > 0) {
     saveUserData();
     renderTasks();
-    playAlarmSound();
+    playSelectedAlarmSound(soundToPlay);
 
     $('alarmT').innerHTML = '⏰ <b>BUDILNIK!</b><br>' + triggeredTasks.map(esc).join('<br>');
     $('alarm').style.display = 'block';

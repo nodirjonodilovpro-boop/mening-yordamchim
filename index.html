@@ -275,10 +275,10 @@
         <input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)">
       </div>
 
-      <!-- 24 SOATLIK FORMATDAGI SOAT VA DAQIQA TANLASH MENYUSI -->
+      <!-- 24 SOATLIK VAQT VA OVOZ TANLASH MENYUSI -->
       <div class="row">
         <div style="display: flex; gap: 8px; width: 100%;">
-          <select id="tHour" style="font-weight: bold; font-size: 1rem;">
+          <select id="tHour" style="font-weight: bold; font-size: 1rem; flex: 1;">
             <option value="">Soat</option>
             <option value="00">00</option><option value="01">01</option><option value="02">02</option>
             <option value="03">03</option><option value="04">04</option><option value="05">05</option>
@@ -290,7 +290,7 @@
             <option value="21">21</option><option value="22">22</option><option value="23">23</option>
           </select>
           <span style="align-self: center; font-weight: bold; font-size: 1.2rem;">:</span>
-          <select id="tMin" style="font-weight: bold; font-size: 1rem;">
+          <select id="tMin" style="font-weight: bold; font-size: 1rem; flex: 1;">
             <option value="">Daqiqa</option>
             <option value="00">00</option><option value="05">05</option><option value="10">10</option>
             <option value="15">15</option><option value="20">20</option><option value="25">25</option>
@@ -300,10 +300,27 @@
         </div>
       </div>
 
-      <button class="btn" id="tAdd">Ish qo‘shish</button>
+      <!-- 10 TA BUDILNIK OVOZI VA ESHITIB KO'RISH TUGMASI -->
+      <div class="row" style="margin-top: 8px;">
+        <select id="tSound" style="flex: 1; font-weight: 500;">
+          <option value="1">🔔 1. Standart Signal</option>
+          <option value="2">⏰ 2. Klassik Budilnik</option>
+          <option value="3">🎵 3. Raqamli Pishillash (Digital Beep)</option>
+          <option value="4">🚨 4. Shoshilinch Trevoga</option>
+          <option value="5">🎹 5. Yumshoq Melodiya</option>
+          <option value="6">🎼 6. Garmonik Akkord</option>
+          <option value="7">⚡ 7. Bip-Bip Tezkor</option>
+          <option value="8">📱 8. Telefon Qo'ng'irog'i</option>
+          <option value="9">🔊 9. Baland Pulsatsiyali</option>
+          <option value="10">✨ 10. Taymer Qong'irog'i</option>
+        </select>
+        <button type="button" id="testSoundBtn" class="mini" title="Ovozni eshitib ko'rish" style="white-space: nowrap;">▶ Ovozni eshitish</button>
+      </div>
+
+      <button class="btn" id="tAdd" style="margin-top: 8px;">Ish qo‘shish</button>
       
       <div class="notif-box">
-        <p>⏰ Eslatma vaqti kelganda ovozli signal va bildirishnoma bilan chalinadi.</p>
+        <p>⏰ Eslatma vaqti kelganda siz tanlagan ovozli signal va bildirishnoma bilan chalinadi.</p>
         <button class="mini" id="notifBtn">🔔 Bildirishnomaga ruxsat berish</button>
       </div>
     </div>
