@@ -4,10 +4,46 @@
     <meta charset="UTF-8">
     <title>Admin Panel - Mening Yordamchim</title>
     <link rel="stylesheet" href="admin.css">
+    <style>
+        /* Agar admin kirmagan bo'lsa chiqadigan login oyna dizayni */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #0f172a;
+            color: white;
+            font-family: sans-serif;
+        }
+        .google-btn {
+            background: #ffffff;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .google-btn:hover {
+            background: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Chap menyu (Sidebar) -->
+
+    <!-- 1. Hali kirmaganlar uchun Kirish ekrani -->
+    <div id="login-screen" style="display: none;">
+        <h2>🔐 Admin Panelga Xush Kelibsiz</h2>
+        <p>Bu sahifaga kirish uchun faqat maxsus admin akkaunt talab qilinadi.</p>
+        <button id="google-login-btn" class="google-btn">Google orqali kirish</button>
+    </div>
+
+    <!-- 2. Asosiy Admin Panel (Faqat admin kirganda ko'rinadi) -->
+    <div class="admin-container" id="admin-main" style="display: none;">
         <aside class="sidebar">
             <h2>Admin Panel</h2>
             <ul>
@@ -15,15 +51,12 @@
                 <li><a href="#" onclick="showSection('users')">👥 Foydalanuvchilar</a></li>
                 <li><a href="#" onclick="showSection('content')">📝 Kontent</a></li>
                 <li><a href="#" onclick="showSection('messages')">💬 Murojaatlar</a></li>
-                <!-- Asosiy saytga o'tish tugmasi -->
                 <li><a href="https://mening-yordamchim.vercel.app/" target="_blank">🌐 Asosiy sayt</a></li>
                 <li><a href="#" id="logout-btn">🚪 Chiqish</a></li>
             </ul>
         </aside>
 
-        <!-- Asosiy qism -->
         <main class="main-content">
-            <!-- 1. Statistika bo'limi -->
             <section id="dashboard" class="content-section">
                 <h2>Statistika va Tahlil</h2>
                 <div class="cards">
@@ -32,7 +65,6 @@
                 </div>
             </section>
 
-            <!-- 2. Foydalanuvchilar bo'limi -->
             <section id="users" class="content-section" style="display: none;">
                 <h2>Foydalanuvchilarni boshqarish</h2>
                 <table id="users-table">
@@ -43,19 +75,15 @@
                             <th>Amallar</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- JavaScript orqali to'ldiriladi -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </section>
 
-            <!-- 3. Kontent bo'limi -->
             <section id="content" class="content-section" style="display: none;">
                 <h2>Kontentni boshqarish</h2>
                 <p>Tez kunda bu yerda maqola va xizmatlarni qo'shish imkoni bo'ladi.</p>
             </section>
 
-            <!-- 4. Murojaatlar bo'limi -->
             <section id="messages" class="content-section" style="display: none;">
                 <h2>Murojaatlar va Xabarlar</h2>
                 <p>Foydalanuvchilardan kelgan xabarlar shu yerda ko'rinadi.</p>
@@ -63,7 +91,6 @@
         </main>
     </div>
 
-    <!-- JavaScript faylini type="module" bilan oxirida ulaymiz -->
     <script type="module" src="admin.js"></script>
 </body>
 </html>
