@@ -275,12 +275,13 @@
         <input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)">
       </div>
       <div class="row">
-        <input id="tTime" type="time">
+        <!-- 24 soatlik formatdagi vaqt inputi -->
+        <input id="tTime" type="time" step="60" style="font-size: 1rem; font-weight: bold;">
       </div>
       <button class="btn" id="tAdd">Ish qo‘shish</button>
       
       <div class="notif-box">
-        <p>⏰ Eslatma sahifa ochiq turganda vaqti kelganda ovoz va xabar bilan chiqadi.</p>
+        <p>⏰ Eslatma vaqti kelganda ovozli signal va bildirishnoma bilan chalinadi.</p>
         <button class="mini" id="notifBtn">🔔 Bildirishnomaga ruxsat berish</button>
       </div>
     </div>
@@ -290,7 +291,6 @@
   <!-- HISOB BO'LIMI -->
   <section id="calc" class="sec">
     <div class="card calc">
-      <!-- ODDIY VA VALYUTA TABLARI -->
       <div class="tabs" style="margin-bottom: 12px;">
         <button type="button" id="calcTabOddiy" class="on">
           <img src="oddiy.png" class="tab-icon" alt="Oddiy"> Oddiy
@@ -443,6 +443,7 @@
   </div>
 </div>
 
+<!-- BUDILNIK OYNASI -->
 <div id="alarm">
   <div id="alarmT"></div>
   <button id="alarmX">Yopish</button>
