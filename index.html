@@ -173,6 +173,20 @@
       display: inline-block;
       vertical-align: middle;
     }
+    /* TAB IKONKALARI STILI */
+    .tabs button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -220,7 +234,7 @@
     </div>
   </div>
 
-  <!-- NAVIGATSIYA MENYUSI (IKONKALAR BILAN) -->
+  <!-- NAVIGATSIYA MENYUSI -->
   <nav id="nav">
     <button data-s="ishlar" class="on">
       <img src="ishlar.png" class="nav-icon" alt="Ishlar"> Ishlar
@@ -276,9 +290,14 @@
   <!-- HISOB BO'LIMI -->
   <section id="calc" class="sec">
     <div class="card calc">
+      <!-- ODDIY VA VALYUTA TABLARI -->
       <div class="tabs" style="margin-bottom: 12px;">
-        <button type="button" id="calcTabOddiy" class="on">🧮 Oddiy</button>
-        <button type="button" id="calcTabValyuta">𒱩 Valyuta</button>
+        <button type="button" id="calcTabOddiy" class="on">
+          <img src="oddiy.png" class="tab-icon" alt="Oddiy"> Oddiy
+        </button>
+        <button type="button" id="calcTabValyuta">
+          <img src="valyuta.png" class="tab-icon" alt="Valyuta"> Valyuta
+        </button>
       </div>
 
       <!-- ODDIY KALKULYATOR -->

@@ -159,6 +159,42 @@ nav button.on {
   vertical-align: middle;
 }
 
+/* TAB TUGMALARI VA IKONKALARI */
+.tabs {
+  display: flex;
+  margin: 16px 0;
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tabs button.on {
+  background: var(--primary);
+  color: #fff;
+}
+
+.tab-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* HAFTA KUNLARI PANELI */
 .week-navigation {
   display: flex;
@@ -491,26 +527,6 @@ input, select {
   margin: 0 auto 12px auto;
   display: block;
 }
-
-.tabs {
-  display: flex;
-  margin: 16px 0;
-  background: var(--input-bg);
-  border-radius: 8px;
-  padding: 2px;
-}
-
-.tabs button {
-  flex: 1;
-  padding: 8px;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.tabs button.on { background: var(--primary); color: #fff; }
 
 .pw { position: relative; margin: 8px 0; }
 #eye { position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; }
