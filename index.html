@@ -6,7 +6,6 @@
   <title>Mening yordamchim</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Hafta navigatsiyasi va kunlari uchun qo'shimcha stillar */
     .week-navigation {
       display: flex;
       justify-content: space-between;
@@ -119,14 +118,12 @@
   <!-- ISHLAR BO'LIMI -->
   <section id="ishlar" class="sec on">
     <div class="card">
-      <!-- Hafta Navigatsiya paneli -->
       <div class="week-navigation">
         <button class="mini" id="prevWeekBtn">◀ Oldingi hafta</button>
         <button class="mini" id="todayBtn">Bugun</button>
         <button class="mini" id="nextWeekBtn">Keyingi hafta ▶</button>
       </div>
 
-      <!-- Hafta kunlari tugmalari -->
       <div class="week-selector" id="weekSelector">
         <button class="week-btn on" data-day-idx="0">Dushanba</button>
         <button class="week-btn" data-day-idx="1">Seshanba</button>
@@ -158,8 +155,45 @@
   <!-- HISOB BO'LIMI -->
   <section id="calc" class="sec">
     <div class="card calc">
-      <div id="disp">0</div>
-      <div class="keys" id="keys"></div>
+      <div class="tabs" style="margin-bottom: 12px;">
+        <button type="button" id="calcTabOddiy" class="on">🧮 Oddiy</button>
+        <button type="button" id="calcTabValyuta">💱 Valyuta</button>
+      </div>
+
+      <!-- ODDIY KALKULYATOR -->
+      <div id="calcOddiyBox">
+        <div id="disp">0</div>
+        <div class="keys" id="keys"></div>
+      </div>
+
+      <!-- VALYUTA KALKULYATORI -->
+      <div id="calcValyutaBox" style="display: none;">
+        <div class="row" style="margin-bottom: 12px;">
+          <input id="vSum" type="number" placeholder="Miqdorni kiriting" value="1" style="font-size: 1.2rem; font-weight: bold;">
+        </div>
+        <div class="row" style="margin-bottom: 12px;">
+          <select id="vFrom" style="font-weight: bold;">
+            <option value="USD">USD ($) - AQSh Dollari</option>
+            <option value="UZS">UZS (so'm) - O'zbek so'mi</option>
+            <option value="EUR">EUR (€) - Yevro</option>
+            <option value="RUB">RUB (₽) - Rossiya Rubli</option>
+          </select>
+        </div>
+        <div style="text-align: center; margin: 8px 0; font-size: 1.2rem; color: var(--primary);">⬇</div>
+        <div class="row" style="margin-bottom: 12px;">
+          <select id="vTo" style="font-weight: bold;">
+            <option value="UZS">UZS (so'm) - O'zbek so'mi</option>
+            <option value="USD">USD ($) - AQSh Dollari</option>
+            <option value="EUR">EUR (€) - Yevro</option>
+            <option value="RUB">RUB (₽) - Rossiya Rubli</option>
+          </select>
+        </div>
+
+        <div style="background: var(--input-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center;">
+          <small style="color: var(--muted); display: block; margin-bottom: 4px;">Natija:</small>
+          <div id="vResult" style="font-size: 1.6rem; font-weight: bold; color: var(--plus);">0 UZS</div>
+        </div>
+      </div>
     </div>
   </section>
 
