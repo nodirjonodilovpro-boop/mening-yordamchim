@@ -147,6 +147,14 @@ nav button.on {
 }
 
 /* HAFTA KUNLARI PANELI */
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .week-selector {
   display: flex;
   gap: 8px;
@@ -175,7 +183,7 @@ nav button.on {
   cursor: pointer;
   white-space: nowrap;
   font-size: 0.9rem;
-  font-weight: 500;
+  text-align: center;
   transition: all 0.2s ease;
 }
 
@@ -200,6 +208,28 @@ nav button.on {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* TELEFON VA DAVLAT KODI BLOKI */
+.phone-input-group {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.phone-input-group select {
+  width: 130px;
+  flex-shrink: 0;
+  padding: 10px 6px;
+  font-size: 0.85rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.phone-input-group input {
+  flex: 1;
 }
 
 /* KARTALAR VA INPUTLAR */
@@ -406,34 +436,4 @@ input, select {
 .tabs button.on { background: var(--primary); color: #fff; }
 
 .pw { position: relative; margin: 8px 0; }
-#eye { position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; }
-#lErr { color: var(--late); font-size: 0.85rem; margin-top: 8px; }
-
-/* ALARM */
-#alarm {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--primary);
-  color: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  display: none;
-  z-index: 100;
-}
-
-/* MOBIL EKRAN UCHUN NAV FIX */
-@media (max-width: 480px) {
-  nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--card-bg);
-    padding: 8px;
-    margin-bottom: 0;
-    border-top: 1px solid var(--border);
-    z-index: 10;
-  }
-}
+#eye { position: absolute; right: 10px;

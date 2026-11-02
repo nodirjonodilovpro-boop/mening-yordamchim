@@ -61,6 +61,25 @@
       align-items: center;
       gap: 6px;
     }
+    /* Telefon va Davlat kodi bloki */
+    .phone-input-group {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+    }
+    .phone-input-group select {
+      width: 130px;
+      flex-shrink: 0;
+      padding: 10px 6px;
+      font-size: 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+    }
+    .phone-input-group input {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -169,7 +188,7 @@
       <!-- VALYUTA KALKULYATORI -->
       <div id="calcValyutaBox" style="display: none;">
         <div class="row" style="margin-bottom: 12px;">
-          <input id="vSum" type="number" placeholder="Miqdorni kiriting" value="1" style="font-size: 1.2rem; font-weight: bold;">
+          <input id="vSum" type="text" placeholder="Miqdorni kiriting" value="1" style="font-size: 1.2rem; font-weight: bold;">
         </div>
         <div class="row" style="margin-bottom: 12px;">
           <select id="vFrom" style="font-weight: bold;">
@@ -206,8 +225,34 @@
         <input id="qFam" placeholder="Familiya">
       </div>
       <div class="row">
-        <input id="qTel" type="tel" placeholder="Telefon raqam">
-        <input id="qSum" type="number" inputmode="decimal" placeholder="Pul miqdori">
+        <!-- Telefon uchun davlat kodlari -->
+        <div class="phone-input-group">
+          <select id="qCode">
+            <option value="+998" selected>🇺🇿 +998</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+7">🇷🇺 +7</option>
+            <option value="+90">🇹🇷 +90</option>
+            <option value="+996">🇰🇬 +996</option>
+            <option value="+992">🇹🇯 +992</option>
+            <option value="+993">🇹🇲 +993</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+82">🇰🇷 +82</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+86">🇨🇳 +86</option>
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+966">🇸🇦 +966</option>
+            <option value="+20">🇪🇬 +20</option>
+            <option value="+48">🇵🇱 +48</option>
+          </select>
+          <input id="qTel" type="tel" placeholder="901234567">
+        </div>
+        <!-- Pul miqdori kiritish -->
+        <input id="qSum" type="text" inputmode="numeric" placeholder="Pul miqdori (masalan: 100 000)">
       </div>
       <div class="row">
         <select id="qTur">
