@@ -2,9 +2,10 @@
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function $(id){ return document.getElementById(id); }
 var UID='', tasks=[], debts=[], sites=[];
-var currentSelectedDay = "Dushanba"; // Boshlang'ich tanlangan hafta kuni
+var currentSelectedDay = "Dushanba";
+var currentSelectedDate = ""; // Tanlangan kunning aniq sanasi
 
-// Mavzu o'zgartirish knopkasi bosilganda
+// Mavzu o'zgartirish
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -12,7 +13,6 @@ $('themeBtn').addEventListener('click', () => {
   localStorage.setItem('theme', newTheme);
 });
 
-// Saqlangan mavzuni yuklash
 (function() {
   const savedTheme = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -38,6 +38,7 @@ function loadUserData() {
     } else {
       tasks = []; debts = []; sites = [];
     }
+    updateWeekDaysWithDates();
     renderTasks();
     renderDebts();
     renderSites();
@@ -52,41 +53,72 @@ function saveUserData() {
   }, { merge: true });
 }
 
-/* ===== Hafta Kunlari Bilan Ishlash ===== */
+/* ===== HAFTA KUNLARI VA SANALARINI HISOBLASH ===== */
+const weekDaysOrder = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
+var weekDatesMap = {}; // { "Dushanba": "02.11.2026", ... }
 
-// Hafta kuni tugmalari bosilganda
+function updateWeekDaysWithDates() {
+  var now = new Date();
+  var dayOfWeek = now.getDay(); // 0 - Yakshanba, 1 - Dushanba...
+  var diffToMonday = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+  
+  // Haftaning Dushanba kunini aniqlash
+  var monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  // Har bir kun uchun sanani hisoblab tugmalarga va obyektga biriktirish
+  document.querySelectorAll('.week-btn').forEach(function(btn, index) {
+    var dayDate = new Date(monday);
+    dayDate.setDate(monday.getDate() + index);
+
+    var d = String(dayDate.getDate()).padStart(2, '0');
+    var m = String(dayDate.getMonth() + 1).padStart(2, '0');
+    var y = dayDate.getFullYear();
+    var dateFormatted = d + '.' + m + '.' + y;
+    var dayName = btn.dataset.day;
+
+    weekDatesMap[dayName] = dateFormatted;
+
+    // Tugma matniga sanani chiqarish (Masalan: Dushanba 02.11)
+    btn.innerHTML = dayName + '<br><small style="font-size:0.75rem;opacity:0.8">' + d + '.' + m + '</small>';
+  });
+
+  // Boshlang'ich tanlangan kun sanasini o'rnatish
+  currentSelectedDate = weekDatesMap[currentSelectedDay];
+  $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' (' + currentSelectedDate + ') kuni uchun ishlar';
+}
+
+// Hafta kuni tugmasi bosilganda
 const weekSelector = $('weekSelector');
 if (weekSelector) {
   weekSelector.addEventListener('click', function(e) {
     const btn = e.target.closest('.week-btn');
     if (!btn) return;
 
-    // Aktiv tugma stilini almashtirish
     document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('on'));
     btn.classList.add('on');
 
-    // Tanlangan kunni yangilash
     currentSelectedDay = btn.dataset.day;
-    $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' kuni uchun ishlar';
-
+    currentSelectedDate = weekDatesMap[currentSelectedDay];
+    
+    $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' (' + currentSelectedDate + ') kuni uchun ishlar';
     renderTasks();
   });
 }
 
 function renderTasks() {
-  // Faqat tanlangan hafta kuniga tegishli ishlarni saralash va filtrlash
   var dayTasks = tasks.filter(function(t) { return t.day === currentSelectedDay; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
 
   $('tList').innerHTML = l.length ? l.map(function(t) {
     return '<div class="item '+(t.done ? 'done' : '')+'">' +
       '<input type="checkbox" style="width:22px;height:22px" '+(t.done ? 'checked' : '')+' data-d="'+t.id+'">' +
-      '<div class="t"><b>'+esc(t.text)+'</b><small>⏰ '+esc(t.time || 'Vaqt belgilanmagan')+'</small></div>' +
+      '<div class="t"><b>'+esc(t.text)+'</b><small>📅 '+esc(t.date || '')+' · ⏰ '+esc(t.time || 'Vaqt belgilanmagan')+'</small></div>' +
       '<button class="mini" data-x="'+t.id+'">✕</button></div>';
-  }).join('') : '<div class="empty-box"><span>📝</span>'+currentSelectedDay+' kuni uchun ishlar yo‘q</div>';
+  }).join('') : '<div class="empty-box"><span>📝</span>'+currentSelectedDay+' ('+currentSelectedDate+') kuni uchun ishlar yo‘q</div>';
 }
 
-// Yangi ish qo'shish
+// Ish qo'shish
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   if(!tx) return;
@@ -94,7 +126,8 @@ $('tAdd').onclick = function() {
   tasks.push({ 
     id: Date.now(), 
     text: tx, 
-    day: currentSelectedDay, // Tanlangan hafta kuni saqlanadi
+    day: currentSelectedDay, 
+    date: currentSelectedDate, // Sanani ham saqlaymiz
     time: $('tTime').value, 
     done: false, 
     notified: false 
@@ -106,7 +139,6 @@ $('tAdd').onclick = function() {
   renderTasks();
 };
 
-// Checkbox belgilash yoki ishni o'chirish
 $('tList').addEventListener('click', function(e) {
   var d = e.target.dataset;
   if(d.d) {
@@ -142,12 +174,11 @@ function beep() {
   } catch(e){}
 }
 
-// Bildirishnomalarni tekshirish (Bugungi hafta kuni va vaqti boyicha)
-const weekDaysMap = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+const weekDaysMapUz = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
 
 function check() {
   var now = new Date();
-  var todayName = weekDaysMap[now.getDay()];
+  var todayName = weekDaysMapUz[now.getDay()];
   var currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
   var hit = [];
 
