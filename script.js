@@ -10,7 +10,6 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
-// Raqamlarni probel bilan ajratish (100000 -> 100 000)
 function formatNumberInput(val) {
   var clean = val.replace(/\D/g, '');
   return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -29,7 +28,6 @@ $('vSum').addEventListener('input', function(e) {
   convertCurrency();
 });
 
-// Mavzu o'zgartirish (Light / Dark)
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -42,7 +40,6 @@ $('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
-/* ===== Navigation (Menyu bo'limlari) ===== */
 $('nav').addEventListener('click', function(e) {
   var b = e.target.closest('button');
   if(!b) return;
@@ -50,7 +47,6 @@ $('nav').addEventListener('click', function(e) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('on', s.id===b.dataset.s); });
 });
 
-/* ===== Firebase Baza (Ma'lumotlarni yuklash va saqlash) ===== */
 function loadUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).get().then(function(doc) {
@@ -66,7 +62,7 @@ function loadUserData() {
     renderTasks();
     renderDebts();
     renderPasswords();
-    check();
+    checkReminders();
   }).catch(function(err) { console.error("Yuklashda xatolik:", err); });
 }
 
@@ -77,7 +73,6 @@ function saveUserData() {
   }, { merge: true });
 }
 
-/* ===== HAFTA VA SANALARINI HISOBLASH ===== */
 function getMondayOfOffsetWeek(offsetWeeks) {
   var d = new Date();
   var day = d.getDay();
@@ -164,7 +159,6 @@ $('weekSelector').addEventListener('click', function(e) {
   renderTasks();
 });
 
-/* ===== ISHLAR RO'YXATI ===== */
 function renderTasks() {
   var dayTasks = tasks.filter(function(t) { return t.fullDate === currentSelectedDateStr; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
@@ -179,21 +173,30 @@ function renderTasks() {
 
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
-  if(!tx) return;
+  var h = $('tHour').value;
+  var m = $('tMin').value;
+
+  if(!tx) {
+    alert('Iltimos, ish nomini kiriting!');
+    return;
+  }
+
+  var timeStr = (h !== '' && m !== '') ? (h + ':' + m) : '';
 
   tasks.push({ 
     id: Date.now(), 
     text: tx, 
     fullDate: currentSelectedDateStr, 
     dayName: currentSelectedDayName,
-    time: $('tTime').value, 
+    time: timeStr, 
     done: false, 
     notified: false 
   });
 
   saveUserData(); 
   $('tText').value = ''; 
-  $('tTime').value = '';
+  $('tHour').value = '';
+  $('tMin').value = '';
   renderTasks();
 };
 
@@ -220,43 +223,72 @@ $('notifBtn').onclick = function() {
   }
 };
 
-function beep() {
+function playAlarmSound() {
   try {
-    var c = new (window.AudioContext || window.webkitAudioContext)();
-    [0, .3, .6].forEach(function(t) {
-      var o = c.createOscillator(), g = c.createGain();
-      o.connect(g); g.connect(c.destination);
-      o.frequency.value = 880; g.gain.value = .15;
-      o.start(c.currentTime + t); o.stop(c.currentTime + t + .2);
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var now = ctx.currentTime;
+    
+    [0, 0.4, 0.8, 1.2].forEach(function(delay) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now + delay);
+      osc.frequency.exponentialRampToValueAtTime(1760, now + delay + 0.2);
+      
+      gain.gain.setValueAtTime(0.3, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(now + delay);
+      osc.stop(now + delay + 0.3);
     });
-  } catch(e){}
+  } catch(e) {
+    console.error("Ovoz chalishda xatolik:", e);
+  }
 }
 
-function check() {
+function checkReminders() {
   var now = new Date();
   var todayISO = formatDateISO(now);
-  var currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-  var hit = [];
+  
+  var hours = String(now.getHours()).padStart(2, '0');
+  var minutes = String(now.getMinutes()).padStart(2, '0');
+  var currentTimeStr = hours + ':' + minutes;
+  
+  var triggeredTasks = [];
 
   tasks.forEach(function(t) {
-    if(!t.done && !t.notified && t.fullDate === todayISO && t.time && t.time <= currentTimeStr) {
-      t.notified = true; 
-      hit.push(t.text);
+    if (!t.done && !t.notified && t.fullDate === todayISO && t.time === currentTimeStr) {
+      t.notified = true;
+      triggeredTasks.push(t.text);
     }
   });
 
-  if(hit.length) {
-    saveUserData(); renderTasks(); beep();
-    $('alarmT').textContent = '⏰ Eslatma: ' + hit.join(' • ');
+  if (triggeredTasks.length > 0) {
+    saveUserData();
+    renderTasks();
+    playAlarmSound();
+
+    $('alarmT').innerHTML = '⏰ <b>BUDILNIK!</b><br>' + triggeredTasks.map(esc).join('<br>');
     $('alarm').style.display = 'block';
-    try { if(Notification.permission==='granted') new Notification('Eslatma', {body: hit.join(', ')}); } catch(e){}
+
+    try {
+      if (Notification.permission === 'granted') {
+        new Notification('⏰ Eslatma vaqti bo‘ldi!', {
+          body: triggeredTasks.join(', '),
+          icon: 'logo.jpg'
+        });
+      }
+    } catch(e){}
   }
 }
 
 $('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
-setInterval(check, 15000);
+setInterval(checkReminders, 1000);
 
-/* ===== KALKULYATOR VA VALYUTA ===== */
 $('calcTabOddiy').onclick = function() {
   $('calcTabOddiy').classList.add('on');
   $('calcTabValyuta').classList.remove('on');
@@ -326,7 +358,6 @@ function convertCurrency() {
 $('vFrom').onchange = convertCurrency;
 $('vTo').onchange = convertCurrency;
 
-/* ===== QARZLAR ===== */
 function money(n){ return Number(n).toLocaleString('ru-RU'); }
 
 function renderDebts() {
@@ -373,7 +404,6 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== LOGIN VA PAROLLAR BO'LIMI ===== */
 function renderPasswords() {
   var f = $('pFind').value.toLowerCase();
   var l = passwords.filter(function(p){ 
@@ -442,7 +472,6 @@ $('pList').addEventListener('click', function(e) {
 
 $('pFind').oninput = renderPasswords;
 
-/* ===== PROFIL MODALI VA SOZLAMALARI ===== */
 $('meImg').onclick = function() {
   var user = auth.currentUser;
   if (user) {
@@ -460,7 +489,6 @@ $('closeProfileModal').onclick = function() {
   $('profileImgInput').value = '';
 };
 
-// Rasmni kichik o'lchamga keltirish (Firestore cheklovlaridan o'tish uchun)
 function shrinkProfileImg(file, cb) {
   var r = new FileReader();
   r.onload = function(){
@@ -558,7 +586,6 @@ $('saveProfileBtn').onclick = function() {
   });
 };
 
-/* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
 var mode = 'login';
 function av(n){ return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>'); }
 
@@ -601,7 +628,6 @@ auth.onAuthStateChanged(function(user) {
     UID = user.uid;
     var name = user.displayName || user.email.split('@')[0];
     
-    // Profil rasmini Firestore'dan olish
     db.collection('users').doc(UID).get().then(function(doc) {
       if (doc.exists && doc.data().photoData) {
         $('meImg').src = doc.data().photoData;
