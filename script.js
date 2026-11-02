@@ -2,8 +2,13 @@
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function $(id){ return document.getElementById(id); }
 var UID='', tasks=[], debts=[], sites=[];
-var currentSelectedDay = "Dushanba";
-var currentSelectedDate = ""; // Tanlangan kunning aniq sanasi
+
+var currentWeekOffset = 0; // 0: Shu hafta, 1: Keyingi hafta, -1: O'tgan hafta va h.k.
+var selectedDayIndex = 0;  // 0: Dushanba, 1: Seshanba... 6: Yakshanba
+var currentSelectedDateStr = ""; // YYYY-MM-DD formatida
+var currentSelectedDayName = "Dushanba";
+
+const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
 // Mavzu o'zgartirish
 $('themeBtn').addEventListener('click', () => {
@@ -38,7 +43,7 @@ function loadUserData() {
     } else {
       tasks = []; debts = []; sites = [];
     }
-    updateWeekDaysWithDates();
+    renderWeekCalendar();
     renderTasks();
     renderDebts();
     renderSites();
@@ -53,72 +58,113 @@ function saveUserData() {
   }, { merge: true });
 }
 
-/* ===== HAFTA KUNLARI VA SANALARINI HISOBLASH ===== */
-const weekDaysOrder = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
-var weekDatesMap = {}; // { "Dushanba": "02.11.2026", ... }
+/* ===== 10 YILLIK VA XOHLAGAN HAFTANING SANALARINI HISOBLASH ===== */
 
-function updateWeekDaysWithDates() {
-  var now = new Date();
-  var dayOfWeek = now.getDay(); // 0 - Yakshanba, 1 - Dushanba...
-  var diffToMonday = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+// Ushbu haftaning Dushanba kunini hisoblash
+function getMondayOfOffsetWeek(offsetWeeks) {
+  var d = new Date();
+  var day = d.getDay();
+  var diff = d.getDate() - day + (day === 0 ? -6 : 1); // Dushanbani topish
+  var monday = new Date(d.setDate(diff));
+  monday.setDate(monday.getDate() + (offsetWeeks * 7));
+  return monday;
+}
+
+function formatDateISO(d) {
+  var year = d.getFullYear();
+  var month = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
+function formatDateUz(d) {
+  var month = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return day + '.' + month + '.' + d.getFullYear();
+}
+
+function renderWeekCalendar() {
+  var monday = getMondayOfOffsetWeek(currentWeekOffset);
   
-  // Haftaning Dushanba kunini aniqlash
-  var monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-
-  // Har bir kun uchun sanani hisoblab tugmalarga va obyektga biriktirish
-  document.querySelectorAll('.week-btn').forEach(function(btn, index) {
-    var dayDate = new Date(monday);
-    dayDate.setDate(monday.getDate() + index);
-
-    var d = String(dayDate.getDate()).padStart(2, '0');
-    var m = String(dayDate.getMonth() + 1).padStart(2, '0');
-    var y = dayDate.getFullYear();
-    var dateFormatted = d + '.' + m + '.' + y;
-    var dayName = btn.dataset.day;
-
-    weekDatesMap[dayName] = dateFormatted;
-
-    // Tugma matniga sanani chiqarish (Masalan: Dushanba 02.11)
-    btn.innerHTML = dayName + '<br><small style="font-size:0.75rem;opacity:0.8">' + d + '.' + m + '</small>';
-  });
-
-  // Boshlang'ich tanlangan kun sanasini o'rnatish
-  currentSelectedDate = weekDatesMap[currentSelectedDay];
-  $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' (' + currentSelectedDate + ') kuni uchun ishlar';
-}
-
-// Hafta kuni tugmasi bosilganda
-const weekSelector = $('weekSelector');
-if (weekSelector) {
-  weekSelector.addEventListener('click', function(e) {
-    const btn = e.target.closest('.week-btn');
-    if (!btn) return;
-
-    document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-
-    currentSelectedDay = btn.dataset.day;
-    currentSelectedDate = weekDatesMap[currentSelectedDay];
+  document.querySelectorAll('.week-btn').forEach(function(btn, idx) {
+    var thisDay = new Date(monday);
+    thisDay.setDate(monday.getDate() + idx);
     
-    $('selectedDayTitle').innerText = '📌 ' + currentSelectedDay + ' (' + currentSelectedDate + ') kuni uchun ishlar';
-    renderTasks();
+    var dayNum = String(thisDay.getDate()).padStart(2, '0');
+    var monthNum = String(thisDay.getMonth() + 1).padStart(2, '0');
+    
+    btn.innerHTML = weekDaysNames[idx] + '<br><small style="font-size:0.75rem;opacity:0.85">' + dayNum + '.' + monthNum + '</small>';
+    btn.dataset.isoDate = formatDateISO(thisDay);
+    btn.dataset.displayDate = formatDateUz(thisDay);
   });
+
+  // Hozirgi tanlangan tugma sanasini o'rnatish
+  var activeBtn = document.querySelectorAll('.week-btn')[selectedDayIndex];
+  if (activeBtn) {
+    currentSelectedDateStr = activeBtn.dataset.isoDate;
+    currentSelectedDayName = weekDaysNames[selectedDayIndex];
+    $('selectedDayTitle').innerText = '📌 ' + currentSelectedDayName + ' (' + activeBtn.dataset.displayDate + ') kuni uchun ishlar';
+  }
 }
 
+// Navigatsiya tugmalari (Oldingi / Keyingi hafta / Bugun)
+$('prevWeekBtn').onclick = function() {
+  currentWeekOffset--;
+  renderWeekCalendar();
+  renderTasks();
+};
+
+$('nextWeekBtn').onclick = function() {
+  currentWeekOffset++;
+  renderWeekCalendar();
+  renderTasks();
+};
+
+$('todayBtn').onclick = function() {
+  currentWeekOffset = 0;
+  var now = new Date();
+  var day = now.getDay();
+  selectedDayIndex = (day === 0 ? 6 : day - 1);
+  
+  document.querySelectorAll('.week-btn').forEach((b, i) => {
+    b.classList.toggle('on', i === selectedDayIndex);
+  });
+
+  renderWeekCalendar();
+  renderTasks();
+};
+
+// Hafta kunlari tugmasini bosish
+$('weekSelector').addEventListener('click', function(e) {
+  var btn = e.target.closest('.week-btn');
+  if(!btn) return;
+  
+  document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+
+  selectedDayIndex = parseInt(btn.dataset.dayIdx);
+  currentSelectedDateStr = btn.dataset.isoDate;
+  currentSelectedDayName = weekDaysNames[selectedDayIndex];
+
+  $('selectedDayTitle').innerText = '📌 ' + currentSelectedDayName + ' (' + btn.dataset.displayDate + ') kuni uchun ishlar';
+  renderTasks();
+});
+
+/* ===== ISHLAR RO'YXATI ===== */
 function renderTasks() {
-  var dayTasks = tasks.filter(function(t) { return t.day === currentSelectedDay; });
+  // Faqat tanlangan aniq sanaga (YYYY-MM-DD) mos ishlarni saralash
+  var dayTasks = tasks.filter(function(t) { return t.fullDate === currentSelectedDateStr; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
 
   $('tList').innerHTML = l.length ? l.map(function(t) {
     return '<div class="item '+(t.done ? 'done' : '')+'">' +
       '<input type="checkbox" style="width:22px;height:22px" '+(t.done ? 'checked' : '')+' data-d="'+t.id+'">' +
-      '<div class="t"><b>'+esc(t.text)+'</b><small>📅 '+esc(t.date || '')+' · ⏰ '+esc(t.time || 'Vaqt belgilanmagan')+'</small></div>' +
+      '<div class="t"><b>'+esc(t.text)+'</b><small>⏰ '+esc(t.time || 'Vaqt belgilanmagan')+'</small></div>' +
       '<button class="mini" data-x="'+t.id+'">✕</button></div>';
-  }).join('') : '<div class="empty-box"><span>📝</span>'+currentSelectedDay+' ('+currentSelectedDate+') kuni uchun ishlar yo‘q</div>';
+  }).join('') : '<div class="empty-box"><span>📝</span>Ushbu kunga rejalashtirilgan ishlar yo‘q</div>';
 }
 
-// Ish qo'shish
+// Yangi ish qo'shish
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   if(!tx) return;
@@ -126,8 +172,8 @@ $('tAdd').onclick = function() {
   tasks.push({ 
     id: Date.now(), 
     text: tx, 
-    day: currentSelectedDay, 
-    date: currentSelectedDate, // Sanani ham saqlaymiz
+    fullDate: currentSelectedDateStr, // Aniq sana: 2026-11-02
+    dayName: currentSelectedDayName,
     time: $('tTime').value, 
     done: false, 
     notified: false 
@@ -174,16 +220,14 @@ function beep() {
   } catch(e){}
 }
 
-const weekDaysMapUz = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
-
 function check() {
   var now = new Date();
-  var todayName = weekDaysMapUz[now.getDay()];
+  var todayISO = formatDateISO(now);
   var currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
   var hit = [];
 
   tasks.forEach(function(t) {
-    if(!t.done && !t.notified && t.day === todayName && t.time && t.time <= currentTimeStr) {
+    if(!t.done && !t.notified && t.fullDate === todayISO && t.time && t.time <= currentTimeStr) {
       t.notified = true; 
       hit.push(t.text);
     }
@@ -200,7 +244,7 @@ function check() {
 $('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
 setInterval(check, 15000);
 
-/* ===== Kalkulyator ===== */
+/* ===== KALKULYATOR ===== */
 var cur='0', acc=null, op=null, fresh=true;
 var KEYS=['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0','.','='];
 $('keys').innerHTML = KEYS.map(function(k){
@@ -224,7 +268,7 @@ $('keys').addEventListener('click', function(e) {
   $('disp').textContent = cur;
 });
 
-/* ===== Qarzlar ===== */
+/* ===== QARZLAR ===== */
 function money(n){ return Number(n).toLocaleString('ru-RU'); }
 
 function renderDebts() {
@@ -255,7 +299,7 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== Saytlarim ===== */
+/* ===== SAYTLARIM ===== */
 var colors = ['#4f46e5,#7c3aed','#0ea5e9,#2563eb','#10b981,#059669','#f59e0b,#ef4444'];
 function host(u){ try{ return new URL(u).hostname.replace('www.',''); }catch(e){ return u; } }
 
@@ -298,7 +342,7 @@ $('sList').addEventListener('click', function(e) {
   if(x && confirm('O‘chirilsinmi?')){ sites = sites.filter(function(s){ return s.id!=x; }); saveUserData(); renderSites(); }
 });
 
-/* ===== Kirish va Ro'yxatdan O'tish ===== */
+/* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
 var mode = 'login';
 function av(n){ return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>'); }
 
@@ -351,7 +395,7 @@ auth.onAuthStateChanged(function(user) {
 
 $('tabLogin').onclick = function(){ setMode('login'); };
 $('tabReg').onclick = function(){ setMode('reg'); };
-$('lBtn').onclick = submitAuth;
+$('lBtn').onclick = function(){ submitAuth(); };
 ['lLogin','lPass','lPass2'].forEach(function(id){ $(id).addEventListener('keydown', function(e){ if(e.key==='Enter') submitAuth(); }); });
 $('eye').onclick = function(){ var t = $('lPass').type==='password'?'text':'password'; $('lPass').type=t; $('lPass2').type=t; };
 $('out').onclick = function(){ auth.signOut().then(function(){ location.reload(); }); };

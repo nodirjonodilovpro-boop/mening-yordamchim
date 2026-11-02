@@ -6,36 +6,61 @@
   <title>Mening yordamchim</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Hafta kunlari tugmalari uchun qo'shimcha stillar */
+    /* Hafta navigatsiyasi va kunlari uchun qo'shimcha stillar */
+    .week-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
     .week-selector {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
       padding-bottom: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
+      scrollbar-width: thin;
+    }
+    .week-selector::-webkit-scrollbar {
+      height: 4px;
+    }
+    .week-selector::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
     }
     .week-btn {
-      background: var(--bg-secondary, #2a3454);
-      color: var(--text-color, #fff);
-      border: 1px solid var(--border-color, #3f4d75);
-      padding: 8px 12px;
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
       white-space: nowrap;
-      font-size: 14px;
+      font-size: 0.9rem;
+      text-align: center;
       transition: all 0.2s ease;
     }
+    .week-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
     .week-btn.on {
-      background: #6366f1;
-      color: #fff;
-      border-color: #6366f1;
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
       font-weight: bold;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
     }
     .selected-day-header {
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 600;
       margin-bottom: 12px;
-      color: #818cf8;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
   </style>
 </head>
@@ -91,18 +116,25 @@
     <button data-s="saytlar">🌐 Saytlarim</button>
   </nav>
 
-  <!-- ISHLAR BO'LIMI (Hafta kunlari bilan yangilandi) -->
+  <!-- ISHLAR BO'LIMI -->
   <section id="ishlar" class="sec on">
     <div class="card">
-      <!-- Hafta kunlarini tanlash paneli -->
+      <!-- Hafta Navigatsiya paneli -->
+      <div class="week-navigation">
+        <button class="mini" id="prevWeekBtn">◀ Oldingi hafta</button>
+        <button class="mini" id="todayBtn">Bugun</button>
+        <button class="mini" id="nextWeekBtn">Keyingi hafta ▶</button>
+      </div>
+
+      <!-- Hafta kunlari tugmalari -->
       <div class="week-selector" id="weekSelector">
-        <button class="week-btn on" data-day="Dushanba">Dushanba</button>
-        <button class="week-btn" data-day="Seshanba">Seshanba</button>
-        <button class="week-btn" data-day="Chorshanba">Chorshanba</button>
-        <button class="week-btn" data-day="Payshanba">Payshanba</button>
-        <button class="week-btn" data-day="Juma">Juma</button>
-        <button class="week-btn" data-day="Shanba">Shanba</button>
-        <button class="week-btn" data-day="Yakshanba">Yakshanba</button>
+        <button class="week-btn on" data-day-idx="0">Dushanba</button>
+        <button class="week-btn" data-day-idx="1">Seshanba</button>
+        <button class="week-btn" data-day-idx="2">Chorshanba</button>
+        <button class="week-btn" data-day-idx="3">Payshanba</button>
+        <button class="week-btn" data-day-idx="4">Juma</button>
+        <button class="week-btn" data-day-idx="5">Shanba</button>
+        <button class="week-btn" data-day-idx="6">Yakshanba</button>
       </div>
 
       <div class="selected-day-header" id="selectedDayTitle">📌 Dushanba kuni uchun ishlar</div>
