@@ -1,7 +1,7 @@
 /* ===== Yordamchi funksiyalar ===== */
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function $(id){ return document.getElementById(id); }
-var UID='', tasks=[], debts=[], sites=[];
+var UID='', tasks=[], debts=[], passwords=[];
 
 var currentWeekOffset = 0;
 var selectedDayIndex = 0;
@@ -10,7 +10,7 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
-// Format number with spaces
+// Raqamlarni probel bilan ajratish
 function formatNumberInput(val) {
   var clean = val.replace(/\D/g, '');
   return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -29,7 +29,7 @@ $('vSum').addEventListener('input', function(e) {
   convertCurrency();
 });
 
-// Theme toggle
+// Mavzu o'zgartirish
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -50,7 +50,7 @@ $('nav').addEventListener('click', function(e) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('on', s.id===b.dataset.s); });
 });
 
-/* ===== Firebase DB ===== */
+/* ===== Firebase Baza ===== */
 function loadUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).get().then(function(doc) {
@@ -58,14 +58,14 @@ function loadUserData() {
       var data = doc.data();
       tasks = data.tasks || [];
       debts = data.debts || [];
-      sites = data.sites || [];
+      passwords = data.passwords || [];
     } else {
-      tasks = []; debts = []; sites = [];
+      tasks = []; debts = []; passwords = [];
     }
     renderWeekCalendar();
     renderTasks();
     renderDebts();
-    renderSites();
+    renderPasswords();
     check();
   }).catch(function(err) { console.error("Yuklashda xatolik:", err); });
 }
@@ -73,11 +73,11 @@ function loadUserData() {
 function saveUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).set({
-    tasks: tasks, debts: debts, sites: sites
+    tasks: tasks, debts: debts, passwords: passwords
   }, { merge: true });
 }
 
-/* ===== Dates calculation ===== */
+/* ===== HAFTA VA SANALARINI HISOBLASH ===== */
 function getMondayOfOffsetWeek(offsetWeeks) {
   var d = new Date();
   var day = d.getDay();
@@ -164,7 +164,7 @@ $('weekSelector').addEventListener('click', function(e) {
   renderTasks();
 });
 
-/* ===== Tasks list ===== */
+/* ===== ISHLAR RO'YXATI ===== */
 function renderTasks() {
   var dayTasks = tasks.filter(function(t) { return t.fullDate === currentSelectedDateStr; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
@@ -256,7 +256,7 @@ function check() {
 $('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
 setInterval(check, 15000);
 
-/* ===== Calculator ===== */
+/* ===== KALKULYATOR VA VALYUTA ===== */
 $('calcTabOddiy').onclick = function() {
   $('calcTabOddiy').classList.add('on');
   $('calcTabValyuta').classList.remove('on');
@@ -308,9 +308,7 @@ function fetchLiveRates() {
       });
       convertCurrency();
     })
-    .catch(err => {
-      convertCurrency();
-    });
+    .catch(err => { convertCurrency(); });
 }
 
 function convertCurrency() {
@@ -328,7 +326,7 @@ function convertCurrency() {
 $('vFrom').onchange = convertCurrency;
 $('vTo').onchange = convertCurrency;
 
-/* ===== Debts ===== */
+/* ===== QARZLAR ===== */
 function money(n){ return Number(n).toLocaleString('ru-RU'); }
 
 function renderDebts() {
@@ -375,50 +373,90 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== Sites ===== */
-var colors = ['#4f46e5,#7c3aed','#0ea5e9,#2563eb','#10b981,#059669','#f59e0b,#ef4444'];
-function host(u){ try{ return new URL(u).hostname.replace('www.',''); }catch(e){ return u; } }
+/* ===== LOGIN VA PAROLLAR BO'LIMI ===== */
+function renderPasswords() {
+  var f = $('pFind').value.toLowerCase();
+  var l = passwords.filter(function(p){ 
+    return (p.app + ' ' + p.login).toLowerCase().indexOf(f) > -1; 
+  }).slice().reverse();
 
-function renderSites() {
-  $('sList').innerHTML = sites.length ? sites.map(function(s,i){
-    var bg = s.img ? 'background-image:url('+s.img+')' : 'background-image:linear-gradient(135deg,'+colors[i%colors.length]+')';
-    return '<div class="site"><a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer"><div class="pic" style="'+bg+'">'+(s.img?'':esc(host(s.url).charAt(0).toUpperCase()))+'</div></a>' +
-      '<div style="margin-top:4px"><a href="'+esc(s.url)+'" target="_blank" style="color:var(--text);text-decoration:none;font-size:0.85rem"><b>'+esc(s.name||host(s.url))+'</b></a></div>' +
-      '<button class="mini" style="margin-top:4px" data-x="'+s.id+'">✕</button></div>';
-  }).join('') : '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--muted)">Hali sayt qo‘shilmagan</div>';
+  $('pList').innerHTML = l.length ? l.map(function(p){
+    var iconHtml = p.img ? 
+      '<img class="pass-icon" src="'+p.img+'" alt="icon">' : 
+      '<div class="pass-icon">'+esc(p.app.charAt(0).toUpperCase())+'</div>';
+
+    return '<div class="pass-card">' + iconHtml +
+      '<div class="pass-info"><b>'+esc(p.app)+'</b>' +
+      '<small>👤 Login: '+esc(p.login)+'</small>' +
+      '<small>🔑 Parol: <span id="passText_'+p.id+'">••••••••</span></small></div>' +
+      '<div class="pass-actions">' +
+        '<button class="mini" onclick="togglePass('+p.id+', \''+esc(p.pass)+'\')">👁</button>' +
+        '<button class="mini" onclick="copyPass(\''+esc(p.pass)+'\')">📋</button>' +
+        '<button class="mini" data-px="'+p.id+'">✕</button>' +
+      '</div></div>';
+  }).join('') : '<div style="text-align:center;padding:16px;color:var(--muted)">Parollar yo‘q</div>';
 }
 
-function shrink(file,cb) {
+function togglePass(id, realPass) {
+  var el = $('passText_' + id);
+  if (el) {
+    el.innerText = el.innerText === '••••••••' ? realPass : '••••••••';
+  }
+}
+
+function copyPass(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    alert('Parol nusxalandi!');
+  });
+}
+
+function shrink(file, cb) {
   var r = new FileReader();
   r.onload = function(){
     var im = new Image();
     im.onload = function(){
-      var w = Math.min(600, im.width), h = im.height*w/im.width, c = document.createElement('canvas');
+      var w = Math.min(300, im.width), h = im.height*w/im.width, c = document.createElement('canvas');
       c.width = w; c.height = h; c.getContext('2d').drawImage(im,0,0,w,h);
-      cb(c.toDataURL('image/jpeg', .7));
+      cb(c.toDataURL('image/jpeg', .8));
     };
     im.src = r.result;
   };
   r.readAsDataURL(file);
 }
 
-$('sAdd').onclick = function() {
-  var u = $('sUrl').value.trim(); if(!u) return;
-  if(!/^https?:\/\//i.test(u)) u = 'https://' + u;
-  var f = $('sImg').files[0];
-  function add(img) {
-    sites.push({ id: Date.now(), url: u, name: $('sName').value.trim(), img: img||'' });
-    saveUserData(); $('sUrl').value=''; $('sName').value=''; $('sImg').value=''; renderSites();
+$('pAdd').onclick = function() {
+  var app = $('pApp').value.trim();
+  var login = $('pLogin').value.trim();
+  var pass = $('pPass').value.trim();
+
+  if(!app || !login || !pass){ 
+    alert('Ilova nomi, login va parolni kiriting'); 
+    return; 
   }
+
+  var f = $('pImg').files[0];
+  function add(img) {
+    passwords.push({ id: Date.now(), app: app, login: login, pass: pass, img: img || '' });
+    saveUserData(); 
+    $('pApp').value=''; $('pLogin').value=''; $('pPass').value=''; $('pImg').value=''; 
+    renderPasswords();
+  }
+
   if(f) shrink(f, add); else add('');
 };
 
-$('sList').addEventListener('click', function(e) {
-  var x = e.target.dataset.x;
-  if(x && confirm('O‘chirilsinmi?')){ sites = sites.filter(function(s){ return s.id!=x; }); saveUserData(); renderSites(); }
+$('pList').addEventListener('click', function(e) {
+  var x = e.target.dataset.px;
+  if(x && confirm('O‘chirilsinmi?')){ 
+    passwords = passwords.filter(function(p){ return p.id != x; }); 
+    saveUserData(); 
+    renderPasswords(); 
+  }
 });
 
-/* ===== Login / Registration ===== */
+$('pFind').oninput = renderPasswords;
+
+/* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
 var mode = 'login';
 function av(n){ return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>'); }
 

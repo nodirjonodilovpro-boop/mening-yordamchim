@@ -61,7 +61,6 @@
       align-items: center;
       gap: 6px;
     }
-    /* Telefon va Davlat kodi bloki */
     .phone-input-group {
       display: flex;
       gap: 6px;
@@ -79,6 +78,47 @@
     }
     .phone-input-group input {
       flex: 1;
+    }
+    /* Parollar карточкаси стили */
+    .pass-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .pass-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .pass-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    .pass-info b {
+      display: block;
+      font-size: 1rem;
+    }
+    .pass-info small {
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+    .pass-actions {
+      display: flex;
+      gap: 6px;
     }
   </style>
 </head>
@@ -131,7 +171,7 @@
     <button data-s="ishlar" class="on">✅ Ishlar</button>
     <button data-s="calc">🧮 Hisob</button>
     <button data-s="qarz">💰 Qarzlar</button>
-    <button data-s="saytlar">🌐 Saytlarim</button>
+    <button data-s="passwords">🔑 Parollar</button>
   </nav>
 
   <!-- ISHLAR BO'LIMI -->
@@ -176,7 +216,7 @@
     <div class="card calc">
       <div class="tabs" style="margin-bottom: 12px;">
         <button type="button" id="calcTabOddiy" class="on">🧮 Oddiy</button>
-        <button type="button" id="calcTabValyuta">💱 Valyuta</button>
+        <button type="button" id="calcTabValyuta">𒱩 Valyuta</button>
       </div>
 
       <!-- ODDIY KALKULYATOR -->
@@ -225,7 +265,6 @@
         <input id="qFam" placeholder="Familiya">
       </div>
       <div class="row">
-        <!-- Telefon uchun davlat kodlari -->
         <div class="phone-input-group">
           <select id="qCode">
             <option value="+998" selected>🇺🇿 +998</option>
@@ -251,7 +290,6 @@
           </select>
           <input id="qTel" type="tel" placeholder="901234567">
         </div>
-        <!-- Pul miqdori kiritish -->
         <input id="qSum" type="text" inputmode="numeric" placeholder="Pul miqdori (masalan: 100 000)">
       </div>
       <div class="row">
@@ -270,20 +308,26 @@
     </div>
   </section>
 
-  <!-- SAYTLAR BO'LIMI -->
-  <section id="saytlar" class="sec">
+  <!-- LOGIN PAROLLAR BO'LIMI -->
+  <section id="passwords" class="sec">
     <div class="card">
       <div class="row1">
-        <input id="sUrl" placeholder="Sayt linki (https://...)">
+        <input id="pApp" placeholder="Ilova / Servis nomi (masalan: Telegram, Instagram, Gmail)">
       </div>
       <div class="row">
-        <input id="sName" placeholder="Sayt nomi (ixtiyoriy)">
-        <input id="sImg" type="file" accept="image/*">
+        <input id="pLogin" placeholder="Login / Telefon / Email">
+        <input id="pPass" type="text" placeholder="Parol">
       </div>
-      <button class="btn" id="sAdd">Saytni qo‘shish</button>
-      <p><small style="color:var(--muted)">Sayt rasmini (skrinshot) tanlasangiz kartada chiqadi. Tanlamasangiz, chiroyli rangli karta chiqadi. Kartaga bossangiz sayt ochiladi.</small></p>
+      <div class="row">
+        <input id="pImg" type="file" accept="image/*">
+      </div>
+      <button class="btn" id="pAdd">Parolni saqlash</button>
+      <p><small style="color:var(--muted)">Ilova/servis rasmini (logotip) tanlasangiz kartada chiqadi. Tanlamasangiz, bosh harfi ko'rinadi.</small></p>
     </div>
-    <div class="sites" id="sList"></div>
+    <div class="card">
+      <input id="pFind" placeholder="🔍 Ilova yoki login bo‘yicha qidirish">
+      <div id="pList" style="margin-top:12px;"></div>
+    </div>
   </section>
 </div>
 
