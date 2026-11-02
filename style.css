@@ -80,11 +80,12 @@ body {
 .me img {
   width: 36px !important;
   height: 36px !important;
-  max-width: 36px !important;
-  max-height: 36px !important;
+  min-width: 36px;
+  min-height: 36px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
+  cursor: pointer;
 }
 
 .theme-toggle {
@@ -121,7 +122,7 @@ body {
 [data-theme="light"] .sun-icon { display: block; color: #f59e0b; }
 [data-theme="light"] .moon-icon { display: none; }
 
-/* NAVIGATSIYA */
+/* NAVIGATSIYA MENYUSI */
 nav {
   display: flex;
   gap: 8px;
@@ -138,12 +139,24 @@ nav button {
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 nav button.on {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* HAFTA KUNLARI PANELI */
@@ -230,6 +243,97 @@ nav button.on {
 
 .phone-input-group input {
   flex: 1;
+}
+
+/* PAROLLAR BO'LIMI KARTALAR */
+.pass-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.pass-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.pass-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.pass-info b {
+  display: block;
+  font-size: 1rem;
+}
+
+.pass-info small {
+  color: var(--muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.pass-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* PROFIL MODAL OYNASI */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 200;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 12px auto;
+  display: block;
+  border: 2px solid var(--primary);
 }
 
 /* KARTALAR VA INPUTLAR */
@@ -356,33 +460,6 @@ input, select {
 
 .keys button.op { background: var(--primary); color: #fff; }
 .keys button.eq { background: var(--plus); color: #fff; }
-
-/* SAYTLAR */
-.sites {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 12px;
-}
-
-.site {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px;
-  text-align: center;
-}
-
-.site .pic {
-  height: 60px;
-  border-radius: 6px;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: #fff;
-}
 
 /* KIRISH OYNASI (LOGIN CARD) */
 #login {

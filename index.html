@@ -159,6 +159,20 @@
       display: block;
       border: 2px solid var(--primary);
     }
+    /* MENYU IKONKALARI STILI */
+    nav button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -206,11 +220,20 @@
     </div>
   </div>
 
+  <!-- NAVIGATSIYA MENYUSI (IKONKALAR BILAN) -->
   <nav id="nav">
-    <button data-s="ishlar" class="on">✅ Ishlar</button>
-    <button data-s="calc">🧮 Hisob</button>
-    <button data-s="qarz">💰 Qarzlar</button>
-    <button data-s="passwords">🔑 Parollar</button>
+    <button data-s="ishlar" class="on">
+      <img src="ishlar.png" class="nav-icon" alt="Ishlar"> Ishlar
+    </button>
+    <button data-s="calc">
+      <img src="calc.png" class="nav-icon" alt="Hisob"> Hisob
+    </button>
+    <button data-s="qarz">
+      <img src="qarz.png" class="nav-icon" alt="Qarzlar"> Qarzlar
+    </button>
+    <button data-s="passwords">
+      <img src="pass.png" class="nav-icon" alt="Parollar"> Parollar
+    </button>
   </nav>
 
   <!-- ISHLAR BO'LIMI -->
