@@ -79,7 +79,6 @@
     .phone-input-group input {
       flex: 1;
     }
-    /* Parollar карточкаси стили */
     .pass-card {
       display: flex;
       align-items: center;
@@ -119,6 +118,46 @@
     .pass-actions {
       display: flex;
       gap: 6px;
+    }
+    /* PROFIL MODAL OYNASI */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 12px auto;
+      display: block;
+      border: 2px solid var(--primary);
     }
   </style>
 </head>
@@ -162,7 +201,7 @@
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <img id="meImg" alt="Profil" title="Profil" style="width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; border-radius: 50%; object-fit: cover; display: block;">
+      <img id="meImg" alt="Profil" title="Profilni tahrirlash" style="width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; border-radius: 50%; object-fit: cover; display: block; cursor: pointer;">
       <button class="mini" id="out">Chiqish</button>
     </div>
   </div>
@@ -308,7 +347,7 @@
     </div>
   </section>
 
-  <!-- LOGIN PAROLLAR BO'LIMI -->
+  <!-- PAROLLAR BO'LIMI -->
   <section id="passwords" class="sec">
     <div class="card">
       <div class="row1">
@@ -329,6 +368,30 @@
       <div id="pList" style="margin-top:12px;"></div>
     </div>
   </section>
+</div>
+
+<!-- PROFIL MODAL OYNASI -->
+<div id="profileModal" class="modal">
+  <div class="modal-card">
+    <button class="modal-close" id="closeProfileModal">✕</button>
+    <h3>Profil Sozlamalari</h3>
+    <p style="color:var(--muted); font-size:0.85rem; margin-bottom:16px;" id="profileEmailDisplay"></p>
+    
+    <img id="profilePreviewImg" class="modal-avatar" src="" alt="Avatar">
+    
+    <div style="margin-bottom: 12px; text-align: left;">
+      <label style="font-size:0.85rem; color:var(--muted); display:block; margin-bottom:4px;">Profil rasmini o'zgartirish:</label>
+      <input type="file" id="profileImgInput" accept="image/*">
+    </div>
+
+    <div style="margin-bottom: 16px; text-align: left;">
+      <label style="font-size:0.85rem; color:var(--muted); display:block; margin-bottom:4px;">Yangi Parol:</label>
+      <input type="password" id="newAccountPassword" placeholder="Yangi parol (kamida 6 belgi)">
+    </div>
+
+    <button class="btn" id="saveProfileBtn">Saqlash</button>
+    <div id="profileErr" style="color:var(--late); font-size:0.85rem; margin-top:8px;"></div>
+  </div>
 </div>
 
 <div id="alarm">

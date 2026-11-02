@@ -10,7 +10,6 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
-// Raqamlarni probel bilan ajratish
 function formatNumberInput(val) {
   var clean = val.replace(/\D/g, '');
   return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -373,7 +372,7 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
-/* ===== LOGIN VA PAROLLAR BO'LIMI ===== */
+/* ===== LOGIN VA PAROLLAR ===== */
 function renderPasswords() {
   var f = $('pFind').value.toLowerCase();
   var l = passwords.filter(function(p){ 
@@ -455,6 +454,71 @@ $('pList').addEventListener('click', function(e) {
 });
 
 $('pFind').oninput = renderPasswords;
+
+/* ===== PROFIL MODALI VA SOZLAMALARI ===== */
+$('meImg').onclick = function() {
+  var user = auth.currentUser;
+  if (user) {
+    $('profileEmailDisplay').innerText = user.email;
+    $('profilePreviewImg').src = user.photoURL || $('meImg').src;
+    $('profileModal').style.display = 'flex';
+  }
+};
+
+$('closeProfileModal').onclick = function() {
+  $('profileModal').style.display = 'none';
+  $('profileErr').innerText = '';
+};
+
+$('saveProfileBtn').onclick = function() {
+  var user = auth.currentUser;
+  var newPass = $('newAccountPassword').value.trim();
+  var imgFile = $('profileImgInput').files[0];
+  var errEl = $('profileErr');
+  errEl.innerText = '';
+
+  if (!user) return;
+
+  function updateAuthProfile(photoUrl) {
+    var promises = [];
+
+    if (photoUrl) {
+      promises.push(user.updateProfile({ photoURL: photoUrl }));
+    }
+
+    if (newPass) {
+      if (newPass.length < 6) {
+        errEl.innerText = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak!';
+        return;
+      }
+      promises.push(user.updatePassword(newPass));
+    }
+
+    if (promises.length === 0) {
+      $('profileModal').style.display = 'none';
+      return;
+    }
+
+    Promise.all(promises).then(function() {
+      alert('Profil muvaffaqiyatli yangilandi!');
+      if (photoUrl) $('meImg').src = photoUrl;
+      $('newAccountPassword').value = '';
+      $('profileImgInput').value = '';
+      $('profileModal').style.display = 'none';
+    }).catch(function(error) {
+      console.error(error);
+      errEl.innerText = 'Xatolik: ' + error.message;
+    });
+  }
+
+  if (imgFile) {
+    shrink(imgFile, function(base64Img) {
+      updateAuthProfile(base64Img);
+    });
+  } else {
+    updateAuthProfile(null);
+  }
+};
 
 /* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
 var mode = 'login';
