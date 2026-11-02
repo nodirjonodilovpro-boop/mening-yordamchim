@@ -3,12 +3,12 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signO
 import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "SIZNING_API_KEY",
-    authDomain: "SIZNING_AUTH_DOMAIN",
-    projectId: "SIZNING_PROJECT_ID",
-    storageBucket: "SIZNING_STORAGE_BUCKET",
-    messagingSenderId: "SIZNING_MESSAGING_SENDER_ID",
-    appId: "SIZNING_APP_ID"
+    apiKey: "AIzaSyDQL5eLdx0hIpqyQr3PNDz-NqqiuSqgzrg",
+    authDomain: "mening-yordamchim-e6fd6.firebaseapp.com",
+    projectId: "mening-yordamchim-e6fd6",
+    storageBucket: "mening-yordamchim-e6fd6.firebasestorage.app",
+    messagingSenderId: "357533463074",
+    appId: "1:357533463074:web:d15e297e2d49d80f3f507b"
 };
 
 const app = initializeApp(firebaseConfig);
