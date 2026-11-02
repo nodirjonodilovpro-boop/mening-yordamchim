@@ -5,12 +5,238 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mening yordamchim</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .week-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .week-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      scrollbar-width: thin;
+    }
+    .week-selector::-webkit-scrollbar {
+      height: 4px;
+    }
+    .week-selector::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    .week-btn {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .week-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .week-btn.on {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    .selected-day-header {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .phone-input-group {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+    }
+    .phone-input-group select {
+      width: 130px;
+      flex-shrink: 0;
+      padding: 10px 6px;
+      font-size: 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+    }
+    .phone-input-group input {
+      flex: 1;
+    }
+    .pass-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .pass-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .pass-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    .pass-info b {
+      display: block;
+      font-size: 1rem;
+    }
+    .pass-info small {
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+    .pass-actions {
+      display: flex;
+      gap: 6px;
+    }
+    /* PROFIL MODAL OYNASI */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 12px auto;
+      display: block;
+      border: 2px solid var(--primary);
+    }
+    /* MENYU IKONKALARI STILI */
+    nav button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* TAB IKONKALARI STILI */
+    .tabs button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body>
 
-<!-- KIRISH OYNASI -->
-<div id="login">
+<!-- 1. LANDING PAGE (SAYTGA KIRISHDAN OLDINGI ASOSIY TAQDIMOT SAHIFASI) -->
+<div id="welcomePage">
+  <div class="welcome-container">
+    <img src="logo.jpg" alt="Mening yordamchim" class="welcome-logo">
+    <h1>Mening yordamchim</h1>
+    <p class="welcome-subtitle">Kunlik rejalaringiz, hisob-kitoblar va parollaringizni bitta xavfsiz joyda boshqaring!</p>
+
+    <div class="welcome-features">
+      <div class="wf-item">
+        <span class="wf-icon">✅</span>
+        <div>
+          <b>Kunlik Ishlar & Budilnik</b>
+          <p>Haftalik rejalaringizni belgilang va 10 xil ovozli budilnik bilan vaqtni o'tkazib yubormang.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">🧮</span>
+        <div>
+          <b>Hisob & Valyuta Kurslari</b>
+          <p>Oddiy kalkulyator va MBning real vaqtdagi kursi bo'yicha valyuta konvertori.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">💰</span>
+        <div>
+          <b>Qarzlar Hisobi</b>
+          <p>Kimdan qancha qarzingiz bor yoki kim berishi kerakligini tartibli saqlang.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">🔑</span>
+        <div>
+          <b>Parollar Hamyoni</b>
+          <p>Ilova va saytlaringiz parollarini xavfsiz holatda saqlang va nusxalang.</p>
+        </div>
+      </div>
+    </div>
+
+    <button id="openLoginBtn" class="btn welcome-btn">Tizimga kirish / Ro‘yxatdan o‘tish ➔</button>
+  </div>
+</div>
+
+<!-- 2. KIRISH OYNASI (MODAL MODIDA) -->
+<div id="login" style="display:none">
   <div class="lcard">
+    <button type="button" id="closeLoginCardBtn" class="modal-close" style="top: 12px; right: 12px;">✕</button>
     <div class="logo">
       <img src="logo.jpg" alt="Mening yordamchim" style="width: 80px !important; height: 80px !important; object-fit: cover; border-radius: 16px; margin: 0 auto 12px auto; display: block;">
     </div>
@@ -37,42 +263,107 @@
   </div>
 </div>
 
-<!-- ASOSIY SAHIFA -->
+<!-- 3. ASOSIY DASTUR SAHIFASI -->
 <div class="wrap" id="app" style="display:none">
   <div class="top">
     <h1><img src="logo.jpg" alt="Logo" class="top-logo" style="width: 28px !important; height: 28px !important; object-fit: cover; border-radius: 6px;"> Mening yordamchim</h1>
     <div class="me">
-      <!-- Zamonaviy SVG Quyosh va Oycha ikonkali tugma -->
       <button class="theme-toggle" id="themeBtn" title="Mavzuni o‘zgartirish">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <img id="meImg" src="logo.jpg" alt="Profil" title="Profil" style="width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; border-radius: 50%; object-fit: cover; display: block;">
+      <img id="meImg" alt="Profil" title="Profilni tahrirlash" style="width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; border-radius: 50%; object-fit: cover; display: block; cursor: pointer;">
       <button class="mini" id="out">Chiqish</button>
     </div>
   </div>
 
+  <!-- NAVIGATSIYA MENYUSI -->
   <nav id="nav">
-    <button data-s="ishlar" class="on">✅ Ishlar</button>
-    <button data-s="calc">🧮 Hisob</button>
-    <button data-s="qarz">💰 Qarzlar</button>
-    <button data-s="saytlar">🌐 Saytlarim</button>
+    <button data-s="ishlar" class="on">
+      <img src="ishlar.png" class="nav-icon" alt="Ishlar"> Ishlar
+    </button>
+    <button data-s="calc">
+      <img src="calc.png" class="nav-icon" alt="Hisob"> Hisob
+    </button>
+    <button data-s="qarz">
+      <img src="qarz.png" class="nav-icon" alt="Qarzlar"> Qarzlar
+    </button>
+    <button data-s="passwords">
+      <img src="pass.png" class="nav-icon" alt="Parollar"> Parollar
+    </button>
   </nav>
 
   <!-- ISHLAR BO'LIMI -->
   <section id="ishlar" class="sec on">
     <div class="card">
+      <div class="week-navigation">
+        <button class="mini" id="prevWeekBtn">◀ Oldingi hafta</button>
+        <button class="mini" id="todayBtn">Bugun</button>
+        <button class="mini" id="nextWeekBtn">Keyingi hafta ▶</button>
+      </div>
+
+      <div class="week-selector" id="weekSelector">
+        <button class="week-btn on" data-day-idx="0">Dushanba</button>
+        <button class="week-btn" data-day-idx="1">Seshanba</button>
+        <button class="week-btn" data-day-idx="2">Chorshanba</button>
+        <button class="week-btn" data-day-idx="3">Payshanba</button>
+        <button class="week-btn" data-day-idx="4">Juma</button>
+        <button class="week-btn" data-day-idx="5">Shanba</button>
+        <button class="week-btn" data-day-idx="6">Yakshanba</button>
+      </div>
+
+      <div class="selected-day-header" id="selectedDayTitle">📌 Dushanba kuni uchun ishlar</div>
+
       <div class="row1">
         <input id="tText" placeholder="Qanday ish? (masalan: Dorixonaga borish)">
       </div>
+
+      <!-- 24 SOATLIK VAQT VA OVOZ TANLASH MENYUSI -->
       <div class="row">
-        <input id="tDate" type="date">
-        <input id="tTime" type="time">
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <select id="tHour" style="font-weight: bold; font-size: 1rem; flex: 1;">
+            <option value="">Soat</option>
+            <option value="00">00</option><option value="01">01</option><option value="02">02</option>
+            <option value="03">03</option><option value="04">04</option><option value="05">05</option>
+            <option value="06">06</option><option value="07">07</option><option value="08">08</option>
+            <option value="09">09</option><option value="10">10</option><option value="11">11</option>
+            <option value="12">12</option><option value="13">13</option><option value="14">14</option>
+            <option value="15">15</option><option value="16">16</option><option value="17">17</option>
+            <option value="18">18</option><option value="19">19</option><option value="20">20</option>
+            <option value="21">21</option><option value="22">22</option><option value="23">23</option>
+          </select>
+          <span style="align-self: center; font-weight: bold; font-size: 1.2rem;">:</span>
+          <select id="tMin" style="font-weight: bold; font-size: 1rem; flex: 1;">
+            <option value="">Daqiqa</option>
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option>
+            <option value="15">15</option><option value="20">20</option><option value="25">25</option>
+            <option value="30">30</option><option value="35">35</option><option value="40">40</option>
+            <option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+        </div>
       </div>
-      <button class="btn" id="tAdd">Ish qo‘shish</button>
+
+      <!-- 10 TA BUDILNIK OVOZI VA ESHITIB KO'RISH TUGMASI -->
+      <div class="row" style="margin-top: 8px;">
+        <select id="tSound" style="flex: 1; font-weight: 500;">
+          <option value="1">🔔 1. Standart Signal</option>
+          <option value="2">⏰ 2. Klassik Budilnik</option>
+          <option value="3">🎵 3. Raqamli Pishillash (Digital Beep)</option>
+          <option value="4">🚨 4. Shoshilinch Trevoga</option>
+          <option value="5">🎹 5. Yumshoq Melodiya</option>
+          <option value="6">🎼 6. Garmonik Akkord</option>
+          <option value="7">⚡ 7. Bip-Bip Tezkor</option>
+          <option value="8">📱 8. Telefon Qo'ng'irog'i</option>
+          <option value="9">🔊 9. Baland Pulsatsiyali</option>
+          <option value="10">✨ 10. Taymer Qong'irog'i</option>
+        </select>
+        <button type="button" id="testSoundBtn" class="mini" title="Ovozni eshitib ko'rish" style="white-space: nowrap;">▶ Ovozni eshitish</button>
+      </div>
+
+      <button class="btn" id="tAdd" style="margin-top: 8px;">Ish qo‘shish</button>
       
       <div class="notif-box">
-        <p>⏰ Eslatma sahifa ochiq turganda vaqti kelganda ovoz va xabar bilan chiqadi.</p>
+        <p>⏰ Eslatma vaqti kelganda siz tanlagan ovozli signal va bildirishnoma bilan chalinadi.</p>
         <button class="mini" id="notifBtn">🔔 Bildirishnomaga ruxsat berish</button>
       </div>
     </div>
@@ -82,8 +373,50 @@
   <!-- HISOB BO'LIMI -->
   <section id="calc" class="sec">
     <div class="card calc">
-      <div id="disp">0</div>
-      <div class="keys" id="keys"></div>
+      <div class="tabs" style="margin-bottom: 12px;">
+        <button type="button" id="calcTabOddiy" class="on">
+          <img src="oddiy.png" class="tab-icon" alt="Oddiy"> Oddiy
+        </button>
+        <button type="button" id="calcTabValyuta">
+          <img src="valyuta.png" class="tab-icon" alt="Valyuta"> Valyuta
+        </button>
+      </div>
+
+      <!-- ODDIY KALKULYATOR -->
+      <div id="calcOddiyBox">
+        <div id="disp">0</div>
+        <div class="keys" id="keys"></div>
+      </div>
+
+      <!-- VALYUTA KALKULYATORI -->
+      <div id="calcValyutaBox" style="display: none;">
+        <div class="row" style="margin-bottom: 12px;">
+          <input id="vSum" type="text" placeholder="Miqdorni kiriting" value="1" style="font-size: 1.2rem; font-weight: bold;">
+        </div>
+        <div class="row" style="margin-bottom: 12px;">
+          <select id="vFrom" style="font-weight: bold;">
+            <option value="USD">USD ($) - AQSh Dollari</option>
+            <option value="UZS">UZS (so'm) - O'zbek so'mi</option>
+            <option value="EUR">EUR (€) - Yevro</option>
+            <option value="RUB">RUB (₽) - Rossiya Rubli</option>
+          </select>
+        </div>
+        <div style="text-align: center; margin: 8px 0; font-size: 1.2rem; color: var(--primary);">⬇</div>
+        <div class="row" style="margin-bottom: 12px;">
+          <select id="vTo" style="font-weight: bold;">
+            <option value="UZS">UZS (so'm) - O'zbek so'mi</option>
+            <option value="USD">USD ($) - AQSh Dollari</option>
+            <option value="EUR">EUR (€) - Yevro</option>
+            <option value="RUB">RUB (₽) - Rossiya Rubli</option>
+          </select>
+        </div>
+
+        <div style="background: var(--input-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center;">
+          <small style="color: var(--muted); display: block; margin-bottom: 4px;">Natija:</small>
+          <div id="vResult" style="font-size: 1.6rem; font-weight: bold; color: var(--plus);">0 UZS</div>
+          <small style="color: var(--muted); display: block; margin-top: 8px; font-size: 0.75rem;">🔄 Bank va MB rasmiy valyuta kursi bo'yicha real vaqtda yangilanadi</small>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -95,8 +428,32 @@
         <input id="qFam" placeholder="Familiya">
       </div>
       <div class="row">
-        <input id="qTel" type="tel" placeholder="Telefon raqam">
-        <input id="qSum" type="number" inputmode="decimal" placeholder="Pul miqdori">
+        <div class="phone-input-group">
+          <select id="qCode">
+            <option value="+998" selected>🇺🇿 +998</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+7">🇷🇺 +7</option>
+            <option value="+90">🇹🇷 +90</option>
+            <option value="+996">🇰🇬 +996</option>
+            <option value="+992">🇹🇯 +992</option>
+            <option value="+993">🇹🇲 +993</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+82">🇰🇷 +82</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+86">🇨🇳 +86</option>
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+966">🇸🇦 +966</option>
+            <option value="+20">🇪🇬 +20</option>
+            <option value="+48">🇵🇱 +48</option>
+          </select>
+          <input id="qTel" type="tel" placeholder="901234567">
+        </div>
+        <input id="qSum" type="text" inputmode="numeric" placeholder="Pul miqdori (masalan: 100 000)">
       </div>
       <div class="row">
         <select id="qTur">
@@ -114,23 +471,61 @@
     </div>
   </section>
 
-  <!-- SAYTLAR BO'LIMI -->
-  <section id="saytlar" class="sec">
+  <!-- PAROLLAR BO'LIMI -->
+  <section id="passwords" class="sec">
     <div class="card">
       <div class="row1">
-        <input id="sUrl" placeholder="Sayt linki (https://...)">
+        <input id="pApp" placeholder="Ilova / Servis nomi (masalan: Telegram, Instagram, Gmail)">
       </div>
       <div class="row">
-        <input id="sName" placeholder="Sayt nomi (ixtiyoriy)">
-        <input id="sImg" type="file" accept="image/*">
+        <input id="pLogin" placeholder="Login / Telefon / Email">
+        <input id="pPass" type="text" placeholder="Parol">
       </div>
-      <button class="btn" id="sAdd">Saytni qo‘shish</button>
-      <p><small style="color:var(--muted)">Sayt rasmini (skrinshot) tanlasangiz kartada chiqadi. Tanlamasangiz, chiroyli rangli karta chiqadi. Kartaga bossangiz sayt ochiladi.</small></p>
+      <div class="row">
+        <input id="pImg" type="file" accept="image/*">
+      </div>
+      <button class="btn" id="pAdd">Parolni saqlash</button>
+      <p><small style="color:var(--muted)">Ilova/servis rasmini (logotip) tanlasangiz kartada chiqadi. Tanlamasangiz, bosh harfi ko'rinadi.</small></p>
     </div>
-    <div class="sites" id="sList"></div>
+    <div class="card">
+      <input id="pFind" placeholder="🔍 Ilova yoki login bo‘yicha qidirish">
+      <div id="pList" style="margin-top:12px;"></div>
+    </div>
   </section>
 </div>
 
+<!-- PROFIL MODAL OYNASI -->
+<div id="profileModal" class="modal">
+  <div class="modal-card">
+    <button class="modal-close" id="closeProfileModal">✕</button>
+    <h3>Profil Sozlamalari</h3>
+    <p style="color:var(--muted); font-size:0.85rem; margin-bottom:16px;" id="profileEmailDisplay"></p>
+    
+    <img id="profilePreviewImg" class="modal-avatar" src="" alt="Avatar">
+    
+    <div style="margin-bottom: 12px; text-align: left;">
+      <label style="font-size:0.85rem; color:var(--muted); display:block; margin-bottom:4px;">Profil rasmini o'zgartirish:</label>
+      <input type="file" id="profileImgInput" accept="image/*">
+    </div>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin:16px 0;">
+
+    <div style="margin-bottom: 8px; text-align: left;">
+      <label style="font-size:0.85rem; color:var(--muted); display:block; margin-bottom:4px;">Hozirgi Parol (tasdiqlash uchun):</label>
+      <input type="password" id="currentAccountPassword" placeholder="Joriy parolingiz">
+    </div>
+
+    <div style="margin-bottom: 16px; text-align: left;">
+      <label style="font-size:0.85rem; color:var(--muted); display:block; margin-bottom:4px;">Yangi Parol:</label>
+      <input type="password" id="newAccountPassword" placeholder="Yangi parol (kamida 6 belgi)">
+    </div>
+
+    <button class="btn" id="saveProfileBtn">Saqlash</button>
+    <div id="profileErr" style="color:var(--late); font-size:0.85rem; margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- BUDILNIK OYNASI -->
 <div id="alarm">
   <div id="alarmT"></div>
   <button id="alarmX">Yopish</button>
