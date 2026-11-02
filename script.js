@@ -10,6 +10,7 @@ var currentSelectedDayName = "Dushanba";
 
 const weekDaysNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
+// Raqamlarni probel bilan ajratish (100000 -> 100 000)
 function formatNumberInput(val) {
   var clean = val.replace(/\D/g, '');
   return clean.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -28,6 +29,7 @@ $('vSum').addEventListener('input', function(e) {
   convertCurrency();
 });
 
+// Mavzu o'zgartirish (Light / Dark)
 $('themeBtn').addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -40,6 +42,7 @@ $('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
+/* ===== Navigation (Menyu bo'limlari) ===== */
 $('nav').addEventListener('click', function(e) {
   var b = e.target.closest('button');
   if(!b) return;
@@ -47,6 +50,7 @@ $('nav').addEventListener('click', function(e) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('on', s.id===b.dataset.s); });
 });
 
+/* ===== Firebase Baza (Ma'lumotlarni yuklash va saqlash) ===== */
 function loadUserData() {
   if (!UID) return;
   db.collection('users').doc(UID).get().then(function(doc) {
@@ -73,6 +77,7 @@ function saveUserData() {
   }, { merge: true });
 }
 
+/* ===== HAFTA VA SANALARINI HISOBLASH ===== */
 function getMondayOfOffsetWeek(offsetWeeks) {
   var d = new Date();
   var day = d.getDay();
@@ -159,6 +164,7 @@ $('weekSelector').addEventListener('click', function(e) {
   renderTasks();
 });
 
+/* ===== ISHLAR RO'YXATI VA VAQT SAQLASH ===== */
 function renderTasks() {
   var dayTasks = tasks.filter(function(t) { return t.fullDate === currentSelectedDateStr; });
   var l = dayTasks.slice().sort(function(a,b){ return (a.done - b.done) || ((a.time || '') > (b.time || '') ? 1 : -1); });
@@ -171,106 +177,7 @@ function renderTasks() {
   }).join('') : '<div class="empty-box"><span>📝</span>Ushbu kunga rejalashtirilgan ishlar yo‘q</div>';
 }
 
-/* ===== 10 XIL BUDILNIK OVOZI GENERATORI ===== */
-function playSelectedAlarmSound(soundType) {
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var now = ctx.currentTime;
-    var st = String(soundType || '1');
-
-    if (st === '1') {
-      [0, 0.4, 0.8].forEach(function(d) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.setValueAtTime(880, now + d);
-        g.gain.setValueAtTime(0.3, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.25);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.3);
-      });
-    } else if (st === '2') {
-      for (var i = 0; i < 10; i++) {
-        var d = i * 0.12;
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'square'; o.frequency.setValueAtTime(1200, now + d);
-        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.08);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.09);
-      }
-    } else if (st === '3') {
-      [0, 0.15, 0.3, 0.6, 0.75, 0.9].forEach(function(d) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'triangle'; o.frequency.setValueAtTime(1046.5, now + d);
-        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.1);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.1);
-      });
-    } else if (st === '4') {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(600, now);
-      o.frequency.linearRampToValueAtTime(1500, now + 0.5);
-      o.frequency.linearRampToValueAtTime(600, now + 1.0);
-      g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(now); o.stop(now + 1.2);
-    } else if (st === '5') {
-      var notes = [523.25, 659.25, 783.99, 1046.5];
-      notes.forEach(function(freq, idx) {
-        var d = idx * 0.25;
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.setValueAtTime(freq, now + d);
-        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.4);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.45);
-      });
-    } else if (st === '6') {
-      [440, 554.37, 659.25].forEach(function(freq) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
-        g.gain.setValueAtTime(0.15, now); g.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now); o.stop(now + 1.0);
-      });
-    } else if (st === '7') {
-      [0, 0.08, 0.16, 0.24, 0.32].forEach(function(d) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'square'; o.frequency.setValueAtTime(1760, now + d);
-        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.05);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.06);
-      });
-    } else if (st === '8') {
-      [0, 0.1, 0.2, 0.3, 0.7, 0.8, 0.9, 1.0].forEach(function(d) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.setValueAtTime(1318.5, now + d);
-        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.08);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.09);
-      });
-    } else if (st === '9') {
-      [0, 0.3, 0.6, 0.9].forEach(function(d) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sawtooth'; o.frequency.setValueAtTime(900, now + d);
-        g.gain.setValueAtTime(0.35, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.2);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(now + d); o.stop(now + d + 0.22);
-      });
-    } else if (st === '10') {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = 'sine'; o.frequency.setValueAtTime(2093, now);
-      g.gain.setValueAtTime(0.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(now); o.stop(now + 1.5);
-    }
-  } catch(e) {
-    console.error("Ovoz chalishda xatolik:", e);
-  }
-}
-
-$('testSoundBtn').onclick = function() {
-  var snd = $('tSound').value;
-  playSelectedAlarmSound(snd);
-};
-
+// 24 soatlik formatdagi soat, daqiqa hamda ovozni saqlash
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   var h = $('tHour').value;
@@ -325,6 +232,120 @@ $('notifBtn').onclick = function() {
   }
 };
 
+/* ===== 10 XIL BUDILNIK OVOZI GENERATORI ===== */
+function playSelectedAlarmSound(soundType) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var now = ctx.currentTime;
+    var st = String(soundType || '1');
+
+    if (st === '1') { // Standart Signal
+      [0, 0.3, 0.6].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(880, now + d);
+        g.gain.setValueAtTime(0.3, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.2);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.22);
+      });
+    } else if (st === '2') { // Klassik Budilnik
+      for (var i = 0; i < 8; i++) {
+        var d = i * 0.1;
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'square'; o.frequency.setValueAtTime(1200, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.06);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.07);
+      }
+    } else if (st === '3') { // Raqamli Pishillash
+      [0, 0.15, 0.3, 0.45].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle'; o.frequency.setValueAtTime(1046.5, now + d);
+        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.08);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.09);
+      });
+    } else if (st === '4') { // Shoshilinch Trevoga
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(600, now);
+      o.frequency.linearRampToValueAtTime(1500, now + 0.4);
+      o.frequency.linearRampToValueAtTime(600, now + 0.8);
+      g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now); o.stop(now + 0.9);
+    } else if (st === '5') { // Yumshoq Melodiya
+      var notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach(function(freq, idx) {
+        var d = idx * 0.2;
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.3);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.35);
+      });
+    } else if (st === '6') { // Garmonik Akkord
+      [440, 554.37, 659.25].forEach(function(freq) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
+        g.gain.setValueAtTime(0.15, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now); o.stop(now + 0.8);
+      });
+    } else if (st === '7') { // Bip-Bip Tezkor
+      [0, 0.08, 0.16, 0.24, 0.32].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'square'; o.frequency.setValueAtTime(1760, now + d);
+        g.gain.setValueAtTime(0.2, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.05);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.06);
+      });
+    } else if (st === '8') { // Telefon Qo'ng'irog'i
+      [0, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(1318.5, now + d);
+        g.gain.setValueAtTime(0.25, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.07);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.08);
+      });
+    } else if (st === '9') { // Baland Pulsatsiyali
+      [0, 0.25, 0.5, 0.75].forEach(function(d) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(900, now + d);
+        g.gain.setValueAtTime(0.35, now + d); g.gain.exponentialRampToValueAtTime(0.01, now + d + 0.18);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + d); o.stop(now + d + 0.2);
+      });
+    } else if (st === '10') { // Taymer Qong'irog'i
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(2093, now);
+      g.gain.setValueAtTime(0.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now); o.stop(now + 1.0);
+    }
+  } catch(e) {
+    console.error("Ovoz chalishda xatolik:", e);
+  }
+}
+
+// Ovozni oldindan eshitib ko'rish
+$('testSoundBtn').onclick = function() {
+  var snd = $('tSound').value;
+  playSelectedAlarmSound(snd);
+};
+
+// Global interval o'zgaruvchilari (30 soniyalik siklni boshqarish uchun)
+var alarmLoopInterval = null;
+var alarmTimeout = null;
+
+function stopAlarmLoop() {
+  if (alarmLoopInterval) { clearInterval(alarmLoopInterval); alarmLoopInterval = null; }
+  if (alarmTimeout) { clearTimeout(alarmTimeout); alarmTimeout = null; }
+  $('alarm').style.display = 'none';
+}
+
+$('alarmX').onclick = stopAlarmLoop;
+
+// Vaqt yetganda 30 soniya davomida har 1.5 soniyada qayta-qayta chalinishi
 function checkReminders() {
   var now = new Date();
   var todayISO = formatDateISO(now);
@@ -347,7 +368,20 @@ function checkReminders() {
   if (triggeredTasks.length > 0) {
     saveUserData();
     renderTasks();
+    
+    stopAlarmLoop();
+
     playSelectedAlarmSound(soundToPlay);
+
+    // Har 1.5 soniyada uzluksiz qayta chalish
+    alarmLoopInterval = setInterval(function() {
+      playSelectedAlarmSound(soundToPlay);
+    }, 1500);
+
+    // 30 soniyadan so'ng avtomatik o'chirish
+    alarmTimeout = setTimeout(function() {
+      stopAlarmLoop();
+    }, 30000);
 
     $('alarmT').innerHTML = '⏰ <b>BUDILNIK!</b><br>' + triggeredTasks.map(esc).join('<br>');
     $('alarm').style.display = 'block';
@@ -363,9 +397,9 @@ function checkReminders() {
   }
 }
 
-$('alarmX').onclick = function(){ $('alarm').style.display = 'none'; };
 setInterval(checkReminders, 1000);
 
+/* ===== KALKULYATOR VA VALYUTA ===== */
 $('calcTabOddiy').onclick = function() {
   $('calcTabOddiy').classList.add('on');
   $('calcTabValyuta').classList.remove('on');
@@ -435,6 +469,7 @@ function convertCurrency() {
 $('vFrom').onchange = convertCurrency;
 $('vTo').onchange = convertCurrency;
 
+/* ===== QARZLAR ===== */
 function money(n){ return Number(n).toLocaleString('ru-RU'); }
 
 function renderDebts() {
@@ -481,6 +516,7 @@ $('qList').addEventListener('click', function(e) {
 });
 $('qFind').oninput = renderDebts;
 
+/* ===== LOGIN VA PAROLLAR BO'LIMI ===== */
 function renderPasswords() {
   var f = $('pFind').value.toLowerCase();
   var l = passwords.filter(function(p){ 
@@ -549,6 +585,7 @@ $('pList').addEventListener('click', function(e) {
 
 $('pFind').oninput = renderPasswords;
 
+/* ===== PROFIL MODALI VA SOZLAMALARI ===== */
 $('meImg').onclick = function() {
   var user = auth.currentUser;
   if (user) {
@@ -663,6 +700,7 @@ $('saveProfileBtn').onclick = function() {
   });
 };
 
+/* ===== KIRISH VA RO'YXATDAN O'TISH ===== */
 var mode = 'login';
 function av(n){ return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#6366f1"/><text x="32" y="43" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">'+esc((n||'?').charAt(0).toUpperCase())+'</text></svg>'); }
 
