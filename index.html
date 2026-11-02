@@ -191,9 +191,52 @@
 </head>
 <body>
 
-<!-- KIRISH OYNASI -->
-<div id="login">
+<!-- 1. LANDING PAGE (SAYTGA KIRISHDAN OLDINGI ASOSIY TAQDIMOT SAHIFASI) -->
+<div id="welcomePage">
+  <div class="welcome-container">
+    <img src="logo.jpg" alt="Mening yordamchim" class="welcome-logo">
+    <h1>Mening yordamchim</h1>
+    <p class="welcome-subtitle">Kunlik rejalaringiz, hisob-kitoblar va parollaringizni bitta xavfsiz joyda boshqaring!</p>
+
+    <div class="welcome-features">
+      <div class="wf-item">
+        <span class="wf-icon">✅</span>
+        <div>
+          <b>Kunlik Ishlar & Budilnik</b>
+          <p>Haftalik rejalaringizni belgilang va 10 xil ovozli budilnik bilan vaqtni o'tkazib yubormang.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">🧮</span>
+        <div>
+          <b>Hisob & Valyuta Kurslari</b>
+          <p>Oddiy kalkulyator va MBning real vaqtdagi kursi bo'yicha valyuta konvertori.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">💰</span>
+        <div>
+          <b>Qarzlar Hisobi</b>
+          <p>Kimdan qancha qarzingiz bor yoki kim berishi kerakligini tartibli saqlang.</p>
+        </div>
+      </div>
+      <div class="wf-item">
+        <span class="wf-icon">🔑</span>
+        <div>
+          <b>Parollar Hamyoni</b>
+          <p>Ilova va saytlaringiz parollarini xavfsiz holatda saqlang va nusxalang.</p>
+        </div>
+      </div>
+    </div>
+
+    <button id="openLoginBtn" class="btn welcome-btn">Tizimga kirish / Ro‘yxatdan o‘tish ➔</button>
+  </div>
+</div>
+
+<!-- 2. KIRISH OYNASI (MODAL MODIDA) -->
+<div id="login" style="display:none">
   <div class="lcard">
+    <button type="button" id="closeLoginCardBtn" class="modal-close" style="top: 12px; right: 12px;">✕</button>
     <div class="logo">
       <img src="logo.jpg" alt="Mening yordamchim" style="width: 80px !important; height: 80px !important; object-fit: cover; border-radius: 16px; margin: 0 auto 12px auto; display: block;">
     </div>
@@ -220,7 +263,7 @@
   </div>
 </div>
 
-<!-- ASOSIY SAHIFA -->
+<!-- 3. ASOSIY DASTUR SAHIFASI -->
 <div class="wrap" id="app" style="display:none">
   <div class="top">
     <h1><img src="logo.jpg" alt="Logo" class="top-logo" style="width: 28px !important; height: 28px !important; object-fit: cover; border-radius: 6px;"> Mening yordamchim</h1>

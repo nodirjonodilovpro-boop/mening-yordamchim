@@ -537,3 +537,91 @@ input, select {
     z-index: 10;
   }
 }
+/* ===== WELCOME / LANDING PAGE DIZAYNI ===== */
+#welcomePage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--bg);
+  text-align: center;
+}
+
+.welcome-container {
+  max-width: 480px;
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+}
+
+.welcome-container h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.welcome-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.welcome-features {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.wf-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--input-bg);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.wf-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.wf-item b {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.wf-item p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.welcome-btn {
+  font-size: 1.05rem;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}

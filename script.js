@@ -42,6 +42,17 @@ $('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
 })();
 
+/* ===== LANDING PAGE VA LOGIN MODAL BOSHQARUVI ===== */
+$('openLoginBtn').onclick = function() {
+  $('welcomePage').style.display = 'none';
+  $('login').style.display = 'flex';
+};
+
+$('closeLoginCardBtn').onclick = function() {
+  $('login').style.display = 'none';
+  $('welcomePage').style.display = 'flex';
+};
+
 /* ===== Navigation (Menyu bo'limlari) ===== */
 $('nav').addEventListener('click', function(e) {
   var b = e.target.closest('button');
@@ -177,7 +188,6 @@ function renderTasks() {
   }).join('') : '<div class="empty-box"><span>📝</span>Ushbu kunga rejalashtirilgan ishlar yo‘q</div>';
 }
 
-// 24 soatlik formatdagi soat, daqiqa hamda ovozni saqlash
 $('tAdd').onclick = function() {
   var tx = $('tText').value.trim();
   var h = $('tHour').value;
@@ -239,7 +249,7 @@ function playSelectedAlarmSound(soundType) {
     var now = ctx.currentTime;
     var st = String(soundType || '1');
 
-    if (st === '1') { // Standart Signal
+    if (st === '1') {
       [0, 0.3, 0.6].forEach(function(d) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'sine'; o.frequency.setValueAtTime(880, now + d);
@@ -247,7 +257,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.22);
       });
-    } else if (st === '2') { // Klassik Budilnik
+    } else if (st === '2') {
       for (var i = 0; i < 8; i++) {
         var d = i * 0.1;
         var o = ctx.createOscillator(), g = ctx.createGain();
@@ -256,7 +266,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.07);
       }
-    } else if (st === '3') { // Raqamli Pishillash
+    } else if (st === '3') {
       [0, 0.15, 0.3, 0.45].forEach(function(d) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'triangle'; o.frequency.setValueAtTime(1046.5, now + d);
@@ -264,7 +274,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.09);
       });
-    } else if (st === '4') { // Shoshilinch Trevoga
+    } else if (st === '4') {
       var o = ctx.createOscillator(), g = ctx.createGain();
       o.type = 'sawtooth';
       o.frequency.setValueAtTime(600, now);
@@ -273,7 +283,7 @@ function playSelectedAlarmSound(soundType) {
       g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
       o.connect(g); g.connect(ctx.destination);
       o.start(now); o.stop(now + 0.9);
-    } else if (st === '5') { // Yumshoq Melodiya
+    } else if (st === '5') {
       var notes = [523.25, 659.25, 783.99, 1046.5];
       notes.forEach(function(freq, idx) {
         var d = idx * 0.2;
@@ -283,7 +293,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.35);
       });
-    } else if (st === '6') { // Garmonik Akkord
+    } else if (st === '6') {
       [440, 554.37, 659.25].forEach(function(freq) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
@@ -291,7 +301,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now); o.stop(now + 0.8);
       });
-    } else if (st === '7') { // Bip-Bip Tezkor
+    } else if (st === '7') {
       [0, 0.08, 0.16, 0.24, 0.32].forEach(function(d) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'square'; o.frequency.setValueAtTime(1760, now + d);
@@ -299,7 +309,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.06);
       });
-    } else if (st === '8') { // Telefon Qo'ng'irog'i
+    } else if (st === '8') {
       [0, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7].forEach(function(d) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'sine'; o.frequency.setValueAtTime(1318.5, now + d);
@@ -307,7 +317,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.08);
       });
-    } else if (st === '9') { // Baland Pulsatsiyali
+    } else if (st === '9') {
       [0, 0.25, 0.5, 0.75].forEach(function(d) {
         var o = ctx.createOscillator(), g = ctx.createGain();
         o.type = 'sawtooth'; o.frequency.setValueAtTime(900, now + d);
@@ -315,7 +325,7 @@ function playSelectedAlarmSound(soundType) {
         o.connect(g); g.connect(ctx.destination);
         o.start(now + d); o.stop(now + d + 0.2);
       });
-    } else if (st === '10') { // Taymer Qong'irog'i
+    } else if (st === '10') {
       var o = ctx.createOscillator(), g = ctx.createGain();
       o.type = 'sine'; o.frequency.setValueAtTime(2093, now);
       g.gain.setValueAtTime(0.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
@@ -327,13 +337,11 @@ function playSelectedAlarmSound(soundType) {
   }
 }
 
-// Ovozni oldindan eshitib ko'rish
 $('testSoundBtn').onclick = function() {
   var snd = $('tSound').value;
   playSelectedAlarmSound(snd);
 };
 
-// Global interval o'zgaruvchilari (30 soniyalik siklni boshqarish uchun)
 var alarmLoopInterval = null;
 var alarmTimeout = null;
 
@@ -345,7 +353,6 @@ function stopAlarmLoop() {
 
 $('alarmX').onclick = stopAlarmLoop;
 
-// Vaqt yetganda 30 soniya davomida har 1.5 soniyada qayta-qayta chalinishi
 function checkReminders() {
   var now = new Date();
   var todayISO = formatDateISO(now);
@@ -373,12 +380,11 @@ function checkReminders() {
 
     playSelectedAlarmSound(soundToPlay);
 
-    // Har 1.5 soniyada uzluksiz qayta chalish
+    // 30 soniya davomida har 1.5 soniyada uzluksiz chalinishi
     alarmLoopInterval = setInterval(function() {
       playSelectedAlarmSound(soundToPlay);
     }, 1500);
 
-    // 30 soniyadan so'ng avtomatik o'chirish
     alarmTimeout = setTimeout(function() {
       stopAlarmLoop();
     }, 30000);
@@ -753,12 +759,14 @@ auth.onAuthStateChanged(function(user) {
       $('meImg').src = user.photoURL || av(name);
     });
 
+    $('welcomePage').style.display = 'none';
     $('login').style.display = 'none';
     $('app').style.display = 'block';
     loadUserData();
   } else {
     UID = '';
-    $('login').style.display = 'flex';
+    $('welcomePage').style.display = 'flex';
+    $('login').style.display = 'none';
     $('app').style.display = 'none';
   }
 });
